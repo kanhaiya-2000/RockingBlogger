@@ -1,0 +1,101 @@
+.follow_tabgroup{
+    margin-top:70px;
+    width:200px;
+    border-bottom:1px solid #e6e6e6;
+    padding-bottom:10px;
+    justify-content: space-between;
+    display:flex;
+    margin-bottom:50px;
+}
+.usercard{
+    display:flex;
+    cursor: pointer;
+    margin:20px;
+    width:600px;
+}
+.userinfo{
+    max-width:320px;
+}
+.avatar{
+    margin-right:20px;
+    display:flex;
+    align-items: center;
+}
+.description{
+    color:rgba(0,0,0,.54) !important;
+    font-size:14px;
+    padding-top:10px;
+}
+.actionbtn {
+	display: flex;
+	align-items: center;
+	margin-left: 20px;
+}
+.actionbtn span{
+    padding: 10px;
+    border-radius: 20px;
+    border:1px solid #008000;
+}
+.bold{    
+    background: #008000;   
+    color:white;    
+}
+
+.topicbox{
+    height:300px;
+    width:300px;
+    display:flex;  
+    flex-direction: column;  
+    box-shadow: 2px 2px 5px gray;
+    margin-right:40px;
+    margin-top:50px;
+    
+}
+.followtabcontent{
+    padding-bottom: 50px;
+    overflow-x: hidden;
+}
+.followtabcontent h3{
+    position:absolute;
+    z-index:2;
+}
+.topicfollowbtn{
+    font-size:large;
+}
+.topicname{
+    font-size:18px;
+}
+.topicfollowbtn svg{
+    transform:scale(1.5);
+}
+svg{
+    cursor:pointer;
+}
+.topicheader{
+    display:flex;
+    justify-content: space-between;
+    padding:10px;
+}
+.content_2{
+    display:flex;
+    width:calc(100% - 100px);
+    flex-direction: row;
+    flex-wrap:wrap;
+}
+.topic_image{
+    width:100%;
+    height:250px;
+    object-fit: cover;
+}
+@media screen and (max-width:550px){
+    .userinfo{
+        width:calc(100vw - 230px);
+    }
+    .userinfo *{
+        overflow:hidden;
+        text-overflow: ellipsis;
+    }
+    .description,.username{
+        white-space: nowrap;
+    }
+}

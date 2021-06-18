@@ -1,0 +1,113 @@
+ /* Home page */
+
+.main{
+    margin-top:60px;
+    display:flex;
+}
+.main_component_home{
+    width:calc(100% - 490px);
+    border-right:1px solid #e6e6e6;
+    height:100vh;
+    padding:20px;    
+    margin-left:60px;
+}
+
+.main_tabs{
+    display:flex;    
+    width:calc(100% - 565px);
+    border-bottom: 1px solid #e6e6e6;
+    padding-bottom:10px;
+    position:fixed;
+    top:54px;
+    z-index:4;
+    background:white;
+    padding:10px;
+    padding-left:20px;
+    border-left:1px solid #e6e6e6;
+}
+
+.tab {
+	margin-right: 40px;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 14px;
+    cursor:pointer;
+	color: #3e3b3b;
+	margin-top: 10px;
+}
+.selected-tab{
+    border-bottom: 3px solid #3e3b3b;
+}
+.follow_people_tag{
+    color:#4f4e4e;
+    display:flex;
+    align-items: center;
+    margin-top:40px;
+    margin-bottom:20px;
+    cursor:pointer;
+}
+.follow_people_tag svg{
+    margin-right:20px;
+    margin-left:10px;
+}
+.main_right{
+    width:490px;
+}
+
+
+
+/* Follow page */
+
+
+.followpage{
+    margin-top:150px;
+    margin-left:150px;
+    
+}
+.followpage h1,.followpage p{      
+    color:#292929;
+}
+.followpage h1{
+    font-size:34px;
+}
+.followpage p{
+    font-size:18px;
+}
+
+@media screen and (max-width:1120px) and (min-width:800px){
+    /* Home */
+    .main_right{
+        width:390px;
+    }
+    .main_tabs{
+        width:calc(100% - 505px)
+    }
+    
+}
+@media screen and (max-width:940px){
+    .followpage{
+        margin-top:90px;
+        margin-left:25px;
+        
+    }
+    .content_2{
+        width:100% !important;
+    }
+}
+@media screen and (max-width:875px){
+     /* Home */
+
+    .main_component_home{
+        width:100%;
+        margin-left:10px;
+    }
+    .main_tabs{
+        width:100%;
+        margin-left:-30px;
+    }
+    .main_right{
+        display:none;
+    }
+    /* Follow page*/
+    
+}
