@@ -3,7 +3,7 @@ import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-const Article = ({article,short})=>{
+const Article = ({article,short,noOption})=>{
     const [isBookmarked,setIsBookmarked] = React.useState(false);
     useEffect(()=>{
         setIsBookmarked(article?.isBookmarked);
@@ -24,10 +24,11 @@ const Article = ({article,short})=>{
                     <div className="article_pb_date">{article.publishDate}</div>
                     <div className="article_expected_reading_time">{article.readingTime}</div>
                 </div>
-                <div className="article_right_info">
+                {!noOption&&<div className="article_right_info">
                     <div className="article_bkm_icon">{article.isSaved?<BookmarkIcon/>:<BookmarkBorderIcon/>}</div>
                     <div className="article_more_icon"><MoreVertIcon/></div>
                 </div>
+                }
                 
             </div>
         </div>

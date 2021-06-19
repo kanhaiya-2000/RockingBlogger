@@ -9,25 +9,29 @@ import Searchpage from './pages/Searchpage';
 import FollowPage from './pages/FollowPage';
 import Navbar from './components/navbar/Navbar';
 import Auth from './components/auth/Auth';
+import Trending from "./pages/Trending";
+import TopicPage from './pages/TopicPage';
 
-function App() { 
+function App() {
   const isAuthenticated = localStorage.getItem("user");
   return (
     <Router>
-      <Navbar/>
-      <Switch>        
-        <Route exact path="/" component={Homepage}/>
-        <Route path="/signin" render={(props) => <Auth open={true}/>} />
-        <Route path="/signup" component={()=><Auth open={true} state={1}/>}/>
-        {/* <Route path="/trending" component={Trending}></Route> */}
-        <Route path="/newstory" render={()=>isAuthenticated?<CreateBlog/>:
-        <Auth open={true}/>
-          }/>
-        <Route path="/search/:term" component={()=><Searchpage key={window.location.pathname}/>}/>
-        <Route path="/follow-tag-or-people" component={FollowPage}/>
-        <Route path="/stories/:sid" component={()=><Blog key={window.location.pathname}/>}/>
-        <Route path="/users/:uid" component={Profile}/>
-        <Redirect to="/"/>
+      <Navbar />
+      <Switch>
+        <Route exact path="/" component={Homepage} />
+        <Route path="/signin" render={(props) => <Auth open={true} />} />
+        <Route path="/signup" component={() => <Auth open={true} state={1} />} />
+        <Route path="/trending" component={Trending}></Route>
+
+        <Route path="/newstory" render={() => isAuthenticated ? <CreateBlog /> :
+          <Auth open={true} />
+        } />
+        <Route path="/topic/:topicname" component={() => <TopicPage key={window.location.pathname} />} />
+        <Route path="/search/:term" component={() => <Searchpage key={window.location.pathname} />} />
+        <Route path="/follow-tag-or-people" component={FollowPage} />
+        <Route path="/stories/:sid" component={() => <Blog key={window.location.pathname} />} />
+        <Route path="/users/:uid" component={Profile} />
+        <Redirect to="/" />
       </Switch>
     </Router>
   );

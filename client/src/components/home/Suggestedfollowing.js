@@ -4,20 +4,20 @@ import Avatar from "@material-ui/core/Avatar";
 import './Home.css';
 
 
-const Suggestedfollowing = () => {
+const Suggestedfollowing = ({suggested}) => {
     const [loading, setLoading] = React.useState(false);
     const history = useHistory();
     const [data, setData] = useState([{url:"/",avatar:"https://miro.medium.com/fit/c/200/134/0*YWVJUCY3HXMHfDGz",username:"kk2000",bio:"Hello here!Are you happy?"}]);
     if (loading) {
         return (
-            <div className="suggestedfollowing">
-                <div className="title">WHO TO FOLLOW</div>
+            <div className={"suggestedfollowing" +(suggested===true?" applyAditionalStyle":"")}>
+                <div className="title">{suggested?"SUGGESTED USER":"WHO TO FOLLOW"}</div>
             </div>
         )
     }
     return (
-        <div className="suggestedfollowing">
-            <div className="title">WHO TO FOLLOW</div>
+        <div className={"suggestedfollowing" +(suggested===true?" applyAditionalStyle":"")}>
+            <div className="title">{suggested?"SUGGESTED USER":"WHO TO FOLLOW"}</div>
             {data.map(user =>
                 <div className="suggested_card" onClick={() => history.push(user.url)}>
                     <div className="suggested_avatar">
