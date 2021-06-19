@@ -17,7 +17,7 @@ import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
 
-const MobileSearchModal = ({ closeModal,history }) => {
+const MobileSearchModal = ({ closeModal,value,setValue,searchResult }) => {
     return (
         <div className="searchmodal mobile_pf">
             <div className="input-wrapper">
@@ -25,9 +25,15 @@ const MobileSearchModal = ({ closeModal,history }) => {
                     type="text"
                     style={{ width: "100%" }}
                     placeholder="Search 🔍️"
+                    value={value}
+                    onChange={(e)=>setValue(e.target.value)}
+                    onKeyDown={(e)=>e.keyCode===13&&searchResult()}
                     autoFocus={true}
-                    onBlur={closeModal}
+                    onBlur={()=>setTimeout(()=>closeModal(),500)}//To make search_button work,so delay closeModal event for 500ms
                 />
+                <div className="search_icon_mobile" onClick={searchResult}>
+                    <SearchOutlinedIcon/>
+                </div>
             </div>
         </div>
     )
@@ -63,8 +69,21 @@ const MobileMenu = ({ isAuthenticated,history,closeModal }) => {
 const Navbar = () => {
     const isAuthenticated = localStorage.getItem("user");
     const history = useHistory();
+    const [value,setVal] = React.useState("");    
     const [openMenu, isMenuOpen] = React.useState(false);
     const [search, isSearchOpen] = React.useState(false);
+
+    const setValue = (value)=>{
+        setVal(value);
+    }
+
+    const searchResult = ()=>{
+        closeModal();
+        history.push('/search/'+value);
+        setVal("");
+        
+    }
+
     const closeModal = () => {
         isSearchOpen(false);
         isMenuOpen(false);
@@ -72,7 +91,7 @@ const Navbar = () => {
     return (
         <div className="header">
             {openMenu && <MobileMenu isAuthenticated={isAuthenticated} history={history} closeModal={closeModal}/>}
-            {search && <MobileSearchModal closeModal={closeModal} history={history}/>}
+            {search && <MobileSearchModal closeModal={closeModal} searchResult={searchResult} value={value} setValue={setValue}/>}
 
             <div className="mainheader_wrapper">
                 <div className="header_left">
@@ -85,6 +104,10 @@ const Navbar = () => {
                         <Input
                             type="text"
                             placeholder="Search 🔍️"
+                            value={value}
+                            onChange={(e)=>setValue(e.target.value)}
+                            onKeyDown={(e)=>e.keyCode===13&&searchResult()}
+                            
                         />
                     </div>
                 </div>

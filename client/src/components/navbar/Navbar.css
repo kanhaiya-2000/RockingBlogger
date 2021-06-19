@@ -47,6 +47,11 @@
     .search,.header_right{
         display: none;
     }
+    .search_icon_mobile{
+        position:absolute;
+        right:20px;
+        top:10px;
+    }
     .mobile_pf{
         display:flex;
         width:102%;

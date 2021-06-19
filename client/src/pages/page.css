@@ -1,5 +1,7 @@
  /* Home page */
-
+*{
+    user-select: none;
+}
 .main{
     margin-top:60px;
     display:flex;
@@ -42,8 +44,8 @@
     color:#4f4e4e;
     display:flex;
     align-items: center;
-    margin-top:40px;
-    margin-bottom:20px;
+    margin-top:70px;
+    margin-bottom:40px;
     cursor:pointer;
 }
 .follow_people_tag svg{
@@ -56,23 +58,25 @@
 
 
 
-/* Follow page */
+/* Follow page and Search page*/
 
 
-.followpage{
+.followpage,.searchpage{
     margin-top:150px;
     margin-left:150px;
     
 }
-.followpage h1,.followpage p{      
+.followpage h1,.searchpage h1,.followpage p,.searchpage p{      
     color:#292929;
 }
-.followpage h1{
+.followpage h1,.searchpage h1{
     font-size:34px;
 }
-.followpage p{
+.followpage p,.searchpage p{
     font-size:18px;
 }
+
+/* */
 
 @media screen and (max-width:1120px) and (min-width:800px){
     /* Home */
@@ -85,7 +89,8 @@
     
 }
 @media screen and (max-width:940px){
-    .followpage{
+    /* Follow page and Search page*/
+    .followpage,.searchpage{
         margin-top:90px;
         margin-left:25px;
         
@@ -108,6 +113,6 @@
     .main_right{
         display:none;
     }
-    /* Follow page*/
+    
     
 }
