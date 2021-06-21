@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {useHistory} from "react-router-dom";
 import "./Navbar.css";
 import Input from "@material-ui/core/Input";
@@ -16,6 +16,7 @@ import MenuOutlinedIcon from '@material-ui/icons/MenuOutlined';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
+import Noti from "../notification/Noti";
 
 const MobileSearchModal = ({ closeModal,value,setValue,searchResult }) => {
     return (
@@ -51,9 +52,7 @@ const MobileMenu = ({ isAuthenticated,history,closeModal }) => {
             <div className="menu_item" onClick={()=>history.push("/trending")}>
                 <WhatshotOutlinedIcon />&nbsp;&nbsp;Trending
             </div>
-            <div className="menu_item" onClick={()=>history.push("/notification")}>
-                <NotificationsActiveOutlinedIcon />&nbsp;&nbsp;Notification
-            </div>
+           
             {!isAuthenticated &&
                 <div className="menu_item" onClick={()=>history.push("/signin")}>
                     <VpnKeyOutlinedIcon />&nbsp;&nbsp;Log in
@@ -72,6 +71,11 @@ const Navbar = () => {
     const [value,setVal] = React.useState("");    
     const [openMenu, isMenuOpen] = React.useState(false);
     const [search, isSearchOpen] = React.useState(false);
+    const [noti,isNoticeOpen] = React.useState(false);
+
+    useEffect(()=>{
+        localStorage.setItem("user",true);
+    },[])
 
     const setValue = (value)=>{
         setVal(value);
@@ -87,12 +91,13 @@ const Navbar = () => {
     const closeModal = () => {
         isSearchOpen(false);
         isMenuOpen(false);
+        isNoticeOpen(false);
     }
     return (
         <div className="header">
             {openMenu && <MobileMenu isAuthenticated={isAuthenticated} history={history} closeModal={closeModal}/>}
             {search && <MobileSearchModal closeModal={closeModal} searchResult={searchResult} value={value} setValue={setValue}/>}
-
+            {noti&&<Noti/>}
             <div className="mainheader_wrapper">
                 <div className="header_left">
                     <a href="/">
@@ -112,13 +117,16 @@ const Navbar = () => {
                     </div>
                 </div>
                 <div className="mobile_header">
-                    <div className="search_mobile" onClick={() => { isSearchOpen(!search); isMenuOpen(false) }}>
+                    <div className="search_mobile" onClick={() => {closeModal();isSearchOpen(!search)}}>
                         <SearchOutlinedIcon />
+                    </div>
+                    <div className="search_mobile" id="notibell" onClick={() => {closeModal();isNoticeOpen(!noti)}}>
+                        <NotificationsActiveOutlinedIcon />
                     </div>
                     <div className="create_new" onClick={()=>history.push("/newstory")}>
                         <AddCircleOutlineOutlinedIcon />
                     </div>
-                    <div className="menu" onClick={() => { isSearchOpen(false); isMenuOpen(!openMenu) }}>
+                    <div className="menu" onClick={() => {closeModal(); isMenuOpen(!openMenu) }}>
                         {openMenu ? <ClearOutlinedIcon /> : <MenuOutlinedIcon />}
                     </div>
                 </div>
@@ -129,7 +137,7 @@ const Navbar = () => {
                         </div>
                     </Tooltip>
                     <Tooltip title="Notifications 🔔️" TransitionComponent={Zoom} arrow>
-                        <div className="notification_icon icon" onClick={()=>history.push("/notification")}>
+                        <div className="notification_icon icon" id="notibell2" onClick={()=>{closeModal();isNoticeOpen(!noti)}}>
                             <NotificationsActiveOutlinedIcon />
                         </div>
                     </Tooltip>
