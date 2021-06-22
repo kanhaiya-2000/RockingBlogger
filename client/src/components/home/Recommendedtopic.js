@@ -11,9 +11,9 @@ const Recommendedtopic = ()=>{
             <div className="recommendedtopic">
                 <span className="title">TRENDING ON BLOGGER</span>
                 <div className="topic_wrapper">
-                <div className="topic">Technology</div>
-                    <div className="topic">Money</div>
-                    <div className="topic">Business</div>
+                <div className="topic" onClick={()=>history.push("/topic/technlogy")}>Technology</div>
+                    <div className="topic" onClick={()=>history.push("/topic/technlogy")}>Money</div>
+                    <div className="topic" onClick={()=>history.push("/topic/technlogy")}>Business</div>
                     <div className="topic">Technology</div>
                     <div className="topic">Money</div>
                     <div className="topic">Business</div>

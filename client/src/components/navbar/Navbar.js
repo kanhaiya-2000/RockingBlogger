@@ -58,7 +58,7 @@ const MobileMenu = ({ isAuthenticated,history,closeModal }) => {
                     <VpnKeyOutlinedIcon />&nbsp;&nbsp;Log in
                 </div>}
             {isAuthenticated && 
-                <div className="menu_item" onClick={()=>history.push("/user/me")}>
+                <div className="menu_item" onClick={()=>history.push("/me")}>
                     <PermIdentityOutlinedIcon />&nbsp;&nbsp;Profile
                 </div>}
         </div>
@@ -154,7 +154,7 @@ const Navbar = () => {
 
                     <div className="profile">{isAuthenticated ?
                         <Tooltip title="Your profile 😃️" TransitionComponent={Zoom} arrow>
-                            <Avatar alt="" onClick={()=>history.push("/user/me")}/>
+                            <Avatar alt="" onClick={()=>history.push("/me")}/>
                         </Tooltip>
                         : <span onClick={()=>history.push("/signin")}>Log in</span>}</div>
                 </div>

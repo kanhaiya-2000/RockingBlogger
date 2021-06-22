@@ -51,7 +51,7 @@ const handleAudioUploadError=(errorMessage, result)=>{
 }
 
   return (
-    <div style={{fontFamily: "'EB Garamond', serif, Roboto", fontSize: "18px"}}>      
+    <div>      
       <SunEditor
         name="RockingBloggerEditor"
         height="100%"

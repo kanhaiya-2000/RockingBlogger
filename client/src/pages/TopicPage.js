@@ -60,9 +60,7 @@ const TopicPage = () => {
                                 {article.header}
                             </h3>
                             <div className="read">{article.readingTime}</div>
-                        </div><div className="article_img" style={{ backgroundImage: `url(${article.image})` }}>
-
-                        </div>
+                        </div><div class="article_image"><img src={article.image} alt=""/></div>
                     </div>)}
                 </div>
             </div>

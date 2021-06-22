@@ -26,11 +26,13 @@ function App() {
         <Route path="/newstory" render={() => isAuthenticated ? <CreateBlog /> :
           <Auth open={true} />
         } />
+        
         <Route path="/topic/:topicname" component={() => <TopicPage key={window.location.pathname} />} />
         <Route path="/search/:term" component={() => <Searchpage key={window.location.pathname} />} />
         <Route path="/follow-tag-or-people" component={FollowPage} />
         <Route path="/stories/:sid" component={() => <Blog key={window.location.pathname} />} />
-        <Route path="/users/:uid" component={Profile} />
+        <Route exact path="/:username" component={Profile}/>
+        {/* <Route path="/users/:uid" component={Profile} /> */}
         <Redirect to="/" />
       </Switch>
     </Router>

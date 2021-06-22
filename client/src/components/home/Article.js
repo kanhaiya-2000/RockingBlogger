@@ -11,7 +11,7 @@ const Article = ({article,short,noOption})=>{
     
     
     return(
-        <div style={{display:"flex",justifyContent:"space-between",width:"100%",alignItems:"center",marginBottom:`${short?"-10px":"30px"}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",width:"100%",alignItems:"center",marginBottom:`${short?"-10px":"30px"}`}} className="article_container">
         <div className={short?"article_comp":"article_comp_real"}>
             <div className="article_author">
                 <img className="article_author_avatar" src={article.author.avatar} alt=""/>

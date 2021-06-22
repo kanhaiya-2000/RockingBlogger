@@ -93,6 +93,7 @@
 .topicimage{
     height:300px;
     background-size:cover;
+   
 }
 .latest_article{
     padding-top:50px;
@@ -166,6 +167,121 @@
     top:30px;
     right:0;
 }
+/*Create Blog css */
+button[data-command="save"],button[data-command="template"],button[data-command="codeView"],button[data-command="preview"],button[data-command="print"]{
+    display:none;
+}
+
+
+/*Profile page */
+
+.profile_page{
+    position:absolute;
+    top:60px;
+    width:100%;
+    overflow-x:hidden;
+    padding-bottom:100px;
+}
+.profile_header{
+    width:100%;
+    height:400px;
+    background-size: cover;
+}
+.profile_tab{
+	width: 450px;
+	display: flex;
+	align-items: center;
+    margin-top:30px;
+    margin-left:100px;
+    cursor: pointer;
+	justify-content: space-between;
+    
+}
+
+.profile_tab_content{
+    margin-left:100px;
+    margin-top:30px;
+   
+    width:100%;
+    border-top:1px solid #ddd;
+}
+.profile_about {
+	width: 550px;
+	line-height: 1.8em;    
+    display:flex;
+    align-items: center;
+	
+}
+.profile_content{
+    padding-right:50px;
+}
+.profile_about div div{
+    font-size: 1.2em;
+	color: #292929;
+    width:300px;
+    word-break: break-all;
+}
+.profile_about h2{
+    font-size:26px;
+}
+.profile_header h2{
+    position: absolute;
+    top: 300px;
+    left: 100px;
+    font-size: 38px;    
+}
+
+.profile_avatar{
+    width:200px;
+    height:200px;    
+}
+.profile_avatar img{
+    width:100%;
+    height:100%;
+    object-fit: cover;
+}
+
+.profile_tab_content div[class="article_container"]{
+    width:575px !important;
+}
+.additional_style{
+    padding-top:50px;
+}
+
+
+@media screen and (max-width:675px){
+    .profile_tab{
+        width:calc(100% - 25px);
+        margin-left:10px;
+    }
+    .profile_tab_content{
+        margin-left:10px;
+    }
+    .profile_tab div:not(.actionbtn){
+        font-size:14px;
+    }
+    .profile_header h2{
+        left:10px;
+        font-size:23px;
+        top:330px;
+    }
+    .profile_tab_content div[class="article_container"]{
+        width:calc(100% - 30px) !important;
+        margin-left:10px;
+    }
+
+    .profile_about{
+        flex-direction:column-reverse;
+        align-items: flex-start;
+        padding-left: 20px;
+        width:100%;
+        height:auto;
+    }
+    .profile_avatar{
+        margin-top:30px;
+        width:calc(100% - 40px);
+    }
+}
 @media screen and (max-width:1200px) {
     .trending{
         margin-left:50px !important;
@@ -235,6 +351,10 @@
     }
     .topic_intro{
         display:none;
+    }
+    .topicimage{
+        width:calc(100% + 100px);
+        margin-left:-50px;
     }
     .article_comp_real{
         padding-right:20px;
