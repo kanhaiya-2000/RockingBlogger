@@ -46,6 +46,7 @@ const userSchema = new Schema({
     },
     bio: String,
     website: String,
+    preferredTopics:[{type:String,default:[]}],
     followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],    
     following:[{type: mongoose.Schema.ObjectId, ref: "User" }],    
     stories: [{ type: mongoose.Schema.ObjectId, ref: "Story" }],   
