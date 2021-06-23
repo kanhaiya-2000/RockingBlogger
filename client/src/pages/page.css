@@ -168,7 +168,7 @@
     right:0;
 }
 /*Create Blog css */
-button[data-command="save"],button[data-command="template"],button[data-command="codeView"],button[data-command="preview"],button[data-command="print"]{
+button[data-command="save"],button[data-command="template"],button[data-command="preview"],button[data-command="codeView"],button[data-command="print"]{
     display:none;
 }
 
@@ -248,6 +248,126 @@ button[data-command="save"],button[data-command="template"],button[data-command=
     padding-top:50px;
 }
 
+/*Blog page */
+.blogpage{
+    max-width:600px;
+    margin:auto;
+    padding:20px;
+    margin-top:100px;
+   
+}
+.blog_header{
+    font-size:34px;
+    letter-spacing: 1px;
+    line-height: 43px;
+    color:#292929;
+
+}
+.blog_short_des{
+    font-size:20px;
+    padding-bottom:20px;
+    color:#757575;
+}
+.blog_author {
+	display: flex;
+	flex-wrap: nowrap;
+    
+}
+.blog_author_avatar{    
+    display:flex;
+    align-items: center;
+}
+.blog_author_info{
+    margin-left:20px;
+    margin-right:20px;
+    
+}
+.blog_author_info_1{    
+    display: flex;
+}
+.blog_author_info_2{
+    color:gray;
+    font-size:15px;
+    display:flex;
+    
+}
+.blog_like_filled{
+    fill:#f00 !important;
+}
+.blog_tag{
+    display:flex;
+}
+.blog_footer{
+    padding-top:40px;
+}
+.blog_tag div[class="topic"]{
+    margin-right:20px;
+    background-color: rgba(172, 172, 172, 0.27);
+    padding:10px 14px;
+    font-size: 12px;
+}
+.blog_icon{
+	display: flex;
+	align-items: center;
+	width: 150px;
+    color:#555;
+    margin-top:40px;
+	justify-content: space-between;
+}
+.blog_like_icon ,.blog_action_icon,.blog_bookm_icon{
+	display: flex;
+	align-items: center;
+
+}
+.blog_comment{
+    padding-top:50px;
+}
+.blog_comment_label{
+    font-size:22px;
+    padding-bottom: 10px;
+}
+.comment_piece{
+    display:flex;
+    align-items: center;
+    margin:10px;
+}
+.user_avatar{
+    margin-right:20px;
+}
+.comment_piece span{
+    font-weight:bold;
+}
+hr{
+    color: white;
+}
+p{
+    word-break: break-all;
+}
+.timestamp {
+	color: gray;
+	font-size: 14px;
+    margin-top:-5px;
+    display:flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+.like {
+	display: flex;
+	align-items: center;
+}
+
+.html_content{
+    width:100%;
+    padding:10px;
+    line-height:32px;
+    font-family: EB Garamond,serif;
+    font-size:22px;
+    letter-spacing: -0.003em;
+    
+}
+.html_content img{
+    width:100%;
+}
 
 @media screen and (max-width:675px){
     .profile_tab{

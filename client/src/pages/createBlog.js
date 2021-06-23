@@ -6,7 +6,7 @@ const MyComponent = props => {
 
   const handleChange=(content)=>{
       localStorage.setItem("content",content);
-      //console.log(content);
+      //console.log(myEditor.current.getCharCount());
   }
 
   const imageUploadHandler = (xmlHttpRequest, info, core)=>{
@@ -46,15 +46,22 @@ const handleAudioUpload =(targetElement, index, state, info, remainingFilesCount
 	console.log(targetElement, index, state, info, remainingFilesCount)
 }
 
+const getCharCount = (num) =>{
+  console.log(num)
+}
+
 const handleAudioUploadError=(errorMessage, result)=>{
 	console.log(errorMessage, result)
 }
+
+const myEditor = React.useRef(null);
 
   return (
     <div>      
       <SunEditor
         name="RockingBloggerEditor"
         height="100%"
+        getCharCount={getCharCount}
         width="100%"
         placeholder="Start writing here..."
         autoFocus={true}
@@ -70,7 +77,7 @@ const handleAudioUploadError=(errorMessage, result)=>{
         handleVideoUpload={handleVideoUpload}
         handleVideoUploadError={handleVideoUploadError}
         defaultValue={localStorage.getItem("content")}
-        setDefaultStyle="font-family: 'EB Garamond', serif, Roboto; font-size: 18px;"
+        setDefaultStyle="font-family: 'EB Garamond', serif, Roboto; font-size: 22px;"
         setOptions={{
             buttonList:buttonList.complex
         }}
