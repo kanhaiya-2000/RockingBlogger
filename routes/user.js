@@ -1,5 +1,5 @@
 const express = require("express");
-const { getUser, postStory, editYourDetail, changePassword, requestOTP, feed, sendNotice, togglefollowPeople, togglefollowTopic, searchUser, getReadingList, getSuggestedStory, getSavedStory, getLikedStory, saveStory, removeFromReadingList, addToReadingList } = require("../controllers/user");
+const { getUser, postStory, editYourDetail, changePassword, requestOTP, feed, sendNotice, togglefollowPeople, togglefollowTopic, searchUser, getReadingList, getSuggestedStory, getSavedStory, getLikedStory, togglesaveStory, removeFromReadingList, addToReadingList } = require("../controllers/user");
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.route("/togglefollowpeople").post(Verify,togglefollowPeople);
 router.route("/togglefollowtopic").post(Verify,togglefollowTopic);
 router.route("/search/:term").post(searchUser);
 router.route("/addtoreadinglist/:sid").post(Verify,addToReadingList);
-router.route("/savestory/:sid").post(Verify,saveStory);
+router.route("/togglesavestory/:sid").post(Verify,togglesaveStory);
 router.route("/removefromreadinglist/:sid").post(Verify,removeFromReadingList);
 router.route("/getreadlist").post(Verify,getReadingList);
 router.route("/getsuggestedstory").post(getSuggestedStory);

@@ -37,7 +37,7 @@ exports.togglefollowTopic = async(req,res,next)=>{
 exports.searchUser = async(req,res,next)=>{
     
 }
-exports.saveStory = async(req,res,next)=>{
+exports.togglesaveStory = async(req,res,next)=>{
 
 }
 exports.addToReadingList = async(req,res,next)=>{

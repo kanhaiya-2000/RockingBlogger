@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { login, signup, me,OTPrequest, changepassword, requestOTPForPwChange } = require("../controllers/auth");
+const { login, signup, me, changepassword, requestOTPForPwChange, twoFactorOtpVerify } = require("../controllers/auth");
 const { Verify } = require("../middleware/auth");
 
 router.route("/signup").post(signup);

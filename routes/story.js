@@ -1,5 +1,5 @@
 const express = require("express");
-const { getStory, trendingStories, addComment,toggleLikeComment, reportStory, searchStory, editStory, toggleLike } = require("../controllers/story");
+const { getStory, trendingStories, addComment,toggleLikeComment, reportStory, searchStory, editStory, toggleLike, deleteComment } = require("../controllers/story");
 const router = express.Router();
 
 const { Verify } = require("../middleware/auth");
@@ -9,6 +9,7 @@ router.route("/trending").post(trendingStories);
 router.route("/togglelike").post(Verify,toggleLike);
 router.route("/addcomment").post(Verify,addComment);
 router.route("/togglelikecomment").post(Verify,toggleLikeComment);
+router.route("/deletecomment/:cid").delete(Verify,deleteComment);
 router.route("/report/:sid").post(Verify,reportStory);
 router.route("/search/:term").post(searchStory);
 router.route("/:sid").put(Verify,editStory);

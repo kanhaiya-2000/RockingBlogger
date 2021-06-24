@@ -22,11 +22,15 @@ exports.Verify = async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         //console.log(decoded);
-        const User = await Userdb.findById(decoded.id).select("-password");
+        const User = await Userdb.findById(decoded.id).populate({
+            path:"unseennotice",
+            select:"sender"
+        });
         ////console.log('\nuser',User);
         if (!User) {
             return next({ message: `No User found for ID ${decoded.id} and tempid ${decoded.tempid}`, logout: true });
         }
+        User.password = null;
         if (!decoded.tempid || !User.tempid) {
             return next({ message: `Please login again to continue`, logout: true });
         }
