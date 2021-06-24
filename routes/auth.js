@@ -8,6 +8,6 @@ router.route("/login").post(login);
 router.route("/me").get(Verify, me);
 router.route("/changepassword").post(changepassword);
 router.route('/recoveryOTP').post(requestOTPForPwChange);
-router.route('/OTPrequest').post(OTPrequest);
+router.route('/twoFactorOtpVerify').post(twoFactorOtpVerify);
 
 module.exports = router;

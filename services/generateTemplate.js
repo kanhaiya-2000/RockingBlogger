@@ -1,0 +1,3 @@
+exports.generateTemplate = ({type,data})=>{
+    
+}

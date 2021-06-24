@@ -10,12 +10,15 @@ const OTPSchema = new mongoose.Schema({
         required:true
     },
     type:{
-        type:String
+        type:String,
+        required:true,
     },
-    expires:{
-        type:Date,
-        required:true
+    Timetried:{
+        default:0,//give max 5 chance to enter the correct OTP
+        type:Number
     }
 });
+
+OTPSchema.index({ createdAt: 1 }, { expireAfterSeconds: 5*60 });//set expiration after 5 min
 
 module.exports = mongoose.model("OTPmodel",OTPSchema);

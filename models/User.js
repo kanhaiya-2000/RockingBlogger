@@ -35,7 +35,8 @@ const userSchema = new Schema({
       type: String,
       required: [true, "Please enter your password"],   
       
-    },       
+    },   
+
     avatar: {
       type: String,
       default:
@@ -46,7 +47,8 @@ const userSchema = new Schema({
     },
     bio: String,
     website: String,
-    preferredTopics:[{type:String,default:[]}],
+    preferredTopics:[{type:String}],
+    twofactorEnabled:{type:Boolean,default:false},
     followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],    
     following:[{type: mongoose.Schema.ObjectId, ref: "User" }],    
     stories: [{ type: mongoose.Schema.ObjectId, ref: "Story" }],   
