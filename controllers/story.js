@@ -304,7 +304,7 @@ exports.searchStory = async (req, res, next) => {
             return;
         }
         const regex = new RegExp(req.body.term, "i");
-        Stories = await Story.find({ $or: [{ title: regex }, { keywords: { $in: [regex] } }, { short_des: regex }] }).sort("-createdAt").lean().exec();
+        Stories = await Story.find({ $or: [{ title: regex }, { topics: { $in: [regex] } }, { short_des: regex }] }).sort("-createdAt").lean().exec();
         Stories.forEach(async function(story){
             story.isLiked = (story.likedBy.toString().includes(req.user.id));
             story.likesCount = story.likedBy.length;

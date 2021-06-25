@@ -10,10 +10,9 @@ const StorySchema = new Schema({
         type:String,
         required:true
     },
-    url:{
-        type:String,    
-        required:true,    
-    }, 
+    cover:{
+        type:String
+    },    
     html_content:{
         type:String,
         required:true
@@ -24,9 +23,10 @@ const StorySchema = new Schema({
         required:true
     }, 
 
-    keywords:{
-        type:[String]
-    },
+    topics:[{
+        type:mongoose.Schema.ObjectId,
+        ref:"Topic"
+    }],
 
     likedBy:[{
         type: mongoose.Schema.ObjectId,   
@@ -40,6 +40,9 @@ const StorySchema = new Schema({
     reportCount:{
           type:Number,
           default:0
+      },
+    readingTime:{
+        type:Number,
       },
     createdAt:{
         type:Date,

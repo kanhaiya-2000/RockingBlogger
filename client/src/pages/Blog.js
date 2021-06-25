@@ -70,7 +70,7 @@ const Blog = ()=>{
                 </div>
                 <div className="blog_footer">
                     <div className="blog_tag">{
-                        blog.tags.map(tag=><div className="topic" onClick={()=>history.push(`/${tag.url}`)}>{tag.text}</div>)
+                        blog.tags.map(tag=><div className="topic" onClick={()=>history.push(`${tag.url}`)}>{tag.text}</div>)
                     }</div>
                     <div className="blog_action">
                         <div className="blog_icon">

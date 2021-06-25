@@ -171,7 +171,8 @@ exports.changepassword = async (req, res, next) => {
                     await OTPCheck.save();
                 }
                 return next({
-                    message: `Wrong OTP.Only ${4 - time} chances left`
+                    message: `Wrong OTP.Only ${4 - time} chances left`,
+                    refreshPage:time==4
                 })
             }
             else {

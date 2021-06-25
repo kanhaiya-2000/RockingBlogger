@@ -1,5 +1,5 @@
 const express = require("express");
-const { getUser, postStory, editYourDetail, changePassword, requestOTP, feed, sendNotice, togglefollowPeople, togglefollowTopic, searchUser, getReadingList, getSuggestedStory, getSavedStory, getLikedStory, togglesaveStory, removeFromReadingList, addToReadingList } = require("../controllers/user");
+const { getUser, postStory, editYourDetail, changePassword, requestOTP, feed, sendNotice, togglefollowPeople, togglefollowTopic, searchUser, getSuggestedStory,  togglesaveStory, removeFromReadingList, addToReadingList, getUserData } = require("../controllers/user");
 
 const router = express.Router();
 
@@ -14,14 +14,13 @@ router.route("/").post(feed);//authenticate the user in controller part
 router.route("/getnotice").post(Verify,sendNotice);
 router.route("/togglefollowpeople").post(Verify,togglefollowPeople);
 router.route("/togglefollowtopic").post(Verify,togglefollowTopic);
-router.route("/search/:term").post(searchUser);
+router.route("/search").post(searchUser);
 router.route("/addtoreadinglist/:sid").post(Verify,addToReadingList);
 router.route("/togglesavestory/:sid").post(Verify,togglesaveStory);
 router.route("/removefromreadinglist/:sid").post(Verify,removeFromReadingList);
-router.route("/getreadlist").post(Verify,getReadingList);
+router.route("/getuserdata/:uid").post(Verify,getUserData);
 router.route("/getsuggestedstory").post(getSuggestedStory);
-router.route("/getsavedstory").post(Verify,getSavedStory);
-router.route("/getlikedstory").post(Verify,getLikedStory);
+
 
 
 module.exports = router;
