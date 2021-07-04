@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 const TopicSchema = new mongoose.Schema({
-    name:String,    
+    name:String,   
+    description:String,
+    cover:String, 
     followedBy:[{
         type:mongoose.Schema.ObjectId,
         ref:"User"

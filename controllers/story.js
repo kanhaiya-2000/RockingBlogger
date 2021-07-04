@@ -6,6 +6,7 @@ const { generateTemplate } = require("../services/generateTemplate");
 const { sendMail } = require("../utils/mailer");
 const SavedStory = require("../models/SavedStory");
 const LikedStory = require("../models/LikedStory");
+const Topic = require("../models/Topic");
 
 exports.getStory = async (req, res, next) => {
     try {
@@ -47,6 +48,91 @@ exports.getStory = async (req, res, next) => {
         })
     }
 
+}
+
+exports.getLatestStories = async(req,res,next)=>{
+    try{
+        const {limit} = req.query;
+        const topic = await Topic.findOne({name:req.params.topic}).populate({
+            path:"stories",
+            select:"title short_des cover user cratedAt readingTime likedBy",
+            populate:{
+                path:"user",
+                select:"username cover"
+            }
+        }).lean().exec();
+        stories = topic.stories.reverse().slice(0,limit);
+        stories.forEach(function(s){
+            s.likedBy = [];
+        })
+        res.status(200).json({success: true, stories, unseennotice: req.user.unseennotice.length})
+    }
+    catch(e){
+        return next({
+            statusCode:500,
+            message:"Failed to complete request"
+        })
+    }
+}
+
+exports.getPopularStories = async(req,res,next)=>{
+    try{
+        const {limit} = req.query;
+        const topic = await Topic.findOne({name:req.params.topic}).populate({
+            path:"stories",
+            select:"title short_des cover user cratedAt readingTime likedBy",
+            populate:{
+                path:"user",
+                select:"username cover"
+            }
+        }).lean().exec();
+        stories = topic.stories.sort(function(a,b){
+            return a.likedBy.length - b.likedBy.length;
+        }).slice(0,limit);
+        stories.forEach(function(s){
+            s.likedBy = [];
+        })
+        res.status(200).json({success: true, stories, unseennotice: req.user.unseennotice.length})
+    }
+    catch(e){
+        return next({
+            statusCode:500,
+            message:"Failed to complete request"
+        })
+    }
+}
+
+exports.getTopicDetail = async(req,res,next)=>{
+    try{
+        const topic = await Topic.findOne({name:req.params.topic}).populate({
+            path:"stories",
+            select:"topics cover",
+            populate:{
+                path:"topics",
+                select:"name"
+            }
+        }).lean().exec();
+        topic.relatedTopics =[];
+        topic.isFollowing = req.user&&topic.followedBy.toString().includes(req.user.id);
+        topic.followedBy = [];
+        topic.stories.sort(function(a,b){return a.likedBy.length - b.likedBy.length}).slice(0,10).forEach(function(s){
+            if(!topic.cover){
+                topic.cover = s.cover;
+            }
+            
+            topic.relatedTopics.push(s.topics);
+        });
+        topic.stories = [];
+        topic.relatedTopics = new Set([...topic.relatedTopics]).filter(function(a){return a.name!=req.params.topic}).slice(0,5);
+
+        res.status(200).json({success:true,topic});
+    }
+    catch(e){
+        return next({
+            statusCode:500,
+            message:"Failed to complete request"
+        })
+    }
 }
 
 exports.trendingStories = async (req, res, next) => {
@@ -300,7 +386,7 @@ exports.reportStory = async (req, res, next) => {
 
 exports.searchStory = async (req, res, next) => {
     try{
-        if(!req.query.term){
+        if(!req.body.term){
             return;
         }
         const regex = new RegExp(req.body.term, "i");

@@ -10,6 +10,7 @@ const ProfileTabContent = ({profile,tabstate})=>{
         <div className={"profile_tab_content"+(tabstate===0?" additional_style":"")}>
             {tabstate===0&&profile.stories.map(story=><Article article={story}/>)}
             {tabstate===1&&profile.followers.map(user=><UserCard people={user}/>)}
+            {tabstate===3&&profile.followers.map(user=><UserCard people={user}/>)}
             {tabstate===2&&
                 <div className="profile_about">
                     <div className="profile_content">

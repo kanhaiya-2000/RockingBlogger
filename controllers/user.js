@@ -11,10 +11,7 @@ const { generateTemplate } = require("../services/generateTemplate");
 
 exports.getUser = async (req, res, next) => {
     try {
-        const user = await User.findOne({ username: req.params.uid }).select("cover avatar fullname username bio website stories").populate({
-            path: "stories",
-            select: "short_des readingTime title likedBy createdAt"
-        }).lean().exec();
+        const user = await User.findOne({ username: req.params.uid }).select("cover avatar fullname username bio website").lean().exec();
 
         if (!user) {
             return next({
@@ -23,20 +20,10 @@ exports.getUser = async (req, res, next) => {
             })
         }
         if (req.user) {
-            user.isMe = (req.params.uid === req.user.id);
-            user.stories.reverse();
+            user.isMe = (req.params.uid == req.user.username);
             user.isFollowing = req.user.following.includes(user._id);
-            user.stories = user.stories.slice(0, 10);
-            user.stories.forEach(async function (s) {
-                const isSaved = await SavedStory.findOne({ story: s._id, userid: req.user.id });
-                const isLiked = (s.likedBy.toString().indexOf(req.user.id) > -1);
-                s.isLiked = isLiked;
-                s.likesCount = s.likedBy.length;
-                s.likedBy = [];
-                s.isSaved = isSaved ? true : false;
-            })
         }
-        res.status(200).json({ success: true, user: user, unseennotice: req.user.unseennotice.length })
+        res.status(200).json({ success: true, profile: user })
     }
     catch (e) {
         return next({
@@ -72,7 +59,7 @@ exports.getUserData = async (req, res, next) => {
                         t.isFollowing = req.user.following.includes(t._id)
                     })
                 }
-                res.status(200).json({ success: true, data: data2, currIndex: currIndex + data2.length, unseennotice: req.user.unseennotice.length });
+                res.status(200).json({ success: true, users: data2 });
                 break;
             case "savedstory":
                 if (!req.user) {
@@ -86,14 +73,14 @@ exports.getUserData = async (req, res, next) => {
                     select: "short_des readingTime title likedBy createdAt"
                 }).lean().exec();
                 data2.reverse();
-                data2 = data2.slice(currIndex, currIndex + 10);
+                data2 = data2.slice(currIndex, currIndex + 5);
                 data2.forEach(function (t) {
                     t.isSaved = true;
                     t.isLiked = t.likedBy.toString().includes(req.user.id);
                     t.likesCount = t.likedBy.length;
                     t.likedBy = [];
                 })
-                res.status(200).json({ success: true, data: data2, currIndex: currIndex + data2.length, unseennotice: req.user.unseennotice.length });
+                res.status(200).json({ success: true, stories: data2, unseennotice: req.user.unseennotice.length });
                 break;
             case "likedstory":
                 if (!req.user) {
@@ -107,14 +94,35 @@ exports.getUserData = async (req, res, next) => {
                     select: "short_des readingTime title likedBy createdAt"
                 }).lean().exec();
                 data2.reverse();
-                data2 = data2.slice(currIndex, currIndex + 10);
+                data2 = data2.slice(currIndex, currIndex + 5);
                 data2.forEach(function (t) {
                     t.isSaved = true;
                     t.isLiked = t.likedBy.toString().includes(req.user.id);
                     t.likesCount = t.likedBy.length;
                     t.likedBy = [];
                 })
-                res.status(200).json({ success: true, data: data2, currIndex: currIndex + data2.length, unseennotice: req.user.unseennotice.length });
+                res.status(200).json({ success: true, stories: data2, unseennotice: req.user.unseennotice.length });
+                break;
+            case "mystory":
+                if (!req.user || !req.user.id) {
+                    return next({
+                        statusCode: 400,
+                        message: "Please login first"
+                    })
+                }
+                const user = await User.findById(req.user.id).populate({
+                    path: "stories",
+                    populate: "short_des readingTime title likedBy createdAt"
+                }).lean().exec();
+                user.stories.slice(currIndex, currIndex + 5).forEach(function (s) {
+                    const isSaved = await SavedStory.findOne({ story: s._id, userid: req.user.id });
+                    const isLiked = (s.likedBy.toString().indexOf(req.user.id) > -1);
+                    s.isLiked = isLiked;
+                    s.likesCount = s.likedBy.length;
+                    s.likedBy = [];
+                    s.isSaved = isSaved ? true : false;
+                });
+                res.status(200).json({ success: true, stories: user.stories, unseennotice: req.user.unseennotice.length })
                 break;
             case "readinglist":
                 if (!req.user) {
@@ -128,14 +136,14 @@ exports.getUserData = async (req, res, next) => {
                     select: "short_des readingTime title likedBy createdAt"
                 }).lean().exec();
                 data2.reverse();
-                data2 = data2.slice(currIndex, currIndex + 10);
+                data2 = data2.slice(currIndex, currIndex + 5);
                 data2.forEach(function (t) {
                     t.isSaved = true;
                     t.isLiked = t.likedBy.toString().includes(req.user.id);
                     t.likesCount = t.likedBy.length;
                     t.likedBy = [];
                 })
-                res.status(200).json({ success: true, data: data2, currIndex: currIndex + data2.length, unseennotice: req.user.unseennotice.length });
+                res.status(200).json({ success: true, stories: data2, currIndex: currIndex + data2.length, unseennotice: req.user.unseennotice.length });
                 break;
             default:
                 return next({
@@ -322,6 +330,37 @@ exports.requestOTP = async (req, res, next) => {
     }
 }
 
+exports.getFollowingStories = async (req, res, next) => {
+    try {
+        let stories = await Story.find({}).populate({
+            path: "user",
+            select: "username avatar"
+        }).lean().exec();
+        const { currIndex } = req.query;
+        stories = stories.slice(currIndex, currIndex + 5);
+
+        for (const s of stories) {
+            if (req.user) {
+                s.isLiked = (s.likedBy.toString().indexOf(req.user.id) > -1);
+                const isSaved = await SavedStory.findOne({ userid: req.user.id, story: s._id });
+                s.isSaved = isSaved ? true : false;
+
+                if (req.user.following.includes(s.user._id)) {
+                    data.followingstories.push({ title: s.title, short_des: s.short_des, isSaved: s.isSaved, isLiked: s.isLiked, likesCount: s.likedBy.length, readingTime: s.readingTime, createdAt: s.createdAt, author: s.user, _id: s._id, cover: s.cover });
+                }
+            }
+
+        }
+        res.status(200).json({ success: true, stories, currIndex, isEnded: stories.length == 0 })
+    }
+    catch (e) {
+        return next({
+            statusCode: 500,
+            message: "Something went wrong"
+        })
+    }
+}
+
 exports.feed = async (req, res, next) => {
     try {
         const data = { explorestories: [], followingstories: [], trendingTopics: [], readingList: [], suggestedUser: [] };
@@ -392,7 +431,7 @@ exports.sendNotice = async (req, res, next) => {
         await User.findByIdAndUpdate(req.user.id, {
             $set: { unseennotice: [] }
         });
-        res.status(200).json({ success: true, unseennotice: 0, notices });
+        res.status(200).json({ success: true, unseennotice: 0, notices: notices.slice(req.query.currIndex, req.query.currIndex + 10) });
     }
     catch (e) {
         return next({
@@ -489,16 +528,17 @@ exports.togglefollowTopic = async (req, res, next) => {
 
 exports.searchUser = async (req, res, next) => {
     try {
-        if (!req.query.term) {
+        if (!req.body.term) {
             return;
         }
         ////console.log(req.user);
-        const regex = new RegExp(req.query.term, "i");
+        const regex = new RegExp(req.body.term, "i");
+        const currIndex = parseInt(req.query.currIndex);
         User.find({ $or: [{ fullname: regex }, { username: regex }] }).select("username fullname avatar").then((data) => {
             data = data.filter(function (d) {
                 return d.username != req.user.username;
-            })
-            res.status(200).json({ unseennotice: req.user.unseennotice.length, success: true, users: data });
+            }).slice(currIndex, currIndex + 10);
+            res.status(200).json({ success: true, users: data });
         });
     }
     catch (e) {
@@ -572,8 +612,8 @@ exports.getSuggestedStory = async (req, res, next) => {
 
             const { currIndex } = req.query;
             stories.reverse();
-            data = stories.slice(currIndex, currIndex + 10);
-            res.status(200).json({ success: true, stories: data, currIndex: currIndex + data.length });
+            data = stories.slice(currIndex, currIndex + 5);
+            res.status(200).json({ success: true, stories: data, currIndex: currIndex, isEnded: data.length == 0 });
             return;
         }
         let data2 = [];
@@ -588,14 +628,122 @@ exports.getSuggestedStory = async (req, res, next) => {
                 }
             }
         });
-        data2 = data2.slice(currIndex, currIndex + 10);
+        data2 = data2.slice(currIndex, currIndex + 5);
         data2.forEach(function (t) {
             t.isSaved = true;
             t.isLiked = t.likedBy.toString().includes(req.user.id);
             t.likesCount = t.likedBy.length;
             t.likedBy = [];
         })
-        res.status(200).json({ success: true, data: data2, currIndex: currIndex + data2.length, unseennotice: req.user.unseennotice.length });
+        res.status(200).json({ success: true, stories: data2 });
+
+    }
+    catch (e) {
+        return next({
+            statusCode: 500,
+            message: "Action failed"
+        })
+    }
+}
+
+exports.getSuggestedUser = async (req, res, next) => {
+    const limit = parseInt(req.query.limit);
+    try {
+        if (!req.user || (req.user && req.user.following.length === 0 && req.user.preferredTopics.length === 0)) {
+            const users = await User.find({});
+            res.json({ success: true, users: users.slice(0, 5) });
+            return;
+        }
+        else {
+            let users = [];
+            for (const t of req.user.preferredTopics.reverse().slice(0, 2)) {
+                const topic = await Topic.findOne({ name: t }).populate({
+                    path: "followedBy",
+                    select: "username avatar bio"
+                });
+                users = users.concat(topic.followedBy);
+            }
+            for (const f of req.user.following.reverse().slice(0, 10)) {
+                const u = await User.findById(f).populate({
+                    path: "following",
+                    select: "username avatar bio"
+                });
+                users = users.concat(u.following);
+            }
+            users = (new Set([...users])).filter(function (a) { return a.username != req.user.username }).slice(0, limit);
+        }
+    }
+    catch (e) {
+        return next({
+            statusCode: 500,
+            message: "Action failed"
+        })
+    }
+}
+
+exports.getsuggestedTopic = async (req, res, next) => {
+    try {
+        const priority = (a,b,c)=>{
+            let prty=0;
+            for(const i of b){
+                const user = await User.findById(i);                
+                if(user.preferredTopics.includes(a.name)){
+                    prty++;
+                }
+            }
+            for(const s of a.stories){
+                for(const t of s.topics){
+                    if(c.toString().includes(t.name)){
+                        prty = prty+2;//give more weightage if it is related to preferredTopics
+                    }
+                }
+            }
+        }
+        const { currIndex } = req.query;
+        if(req.query.trending){
+            topics = await Topic.find({}).select("name followedBy").lean().exec();
+            topics = topics.sort(function (a, b) {
+                return a.followedBy.length - b.followedBy.length;
+            });
+            topics = topics.slice(0, 8);
+            topics.forEach(function (a) {
+                a.followedBy = [];
+            });
+            res.status(200).json({ success: true, topics });
+            return;            
+        }
+        if (!req.user) {
+            topics = await Topic.find({}).select("name followedBy").lean().exec();
+            topics = topics.sort(function (a, b) {
+                return a.followedBy.length - b.followedBy.length;
+            });
+            topics = topics.slice(currIndex, currIndex+10);
+            topics.forEach(function (a) {
+                a.isFollowing = false;
+                a.followedBy = [];
+            });
+            res.status(200).json({ success: true, topics });
+            return;
+        }
+        topics = await Topic.find({}).populate({
+            path:"stories",
+            select:"topics",
+            populate:{
+                path:"topics",
+                select:"name"
+            }
+        }).lean().exec();
+        topics = topics.sort(function (a, b) {
+            return priority(a,req.user.following.reverse(),req.user.preferredTopics.reverse()) - priority(b,req.user.following.reverse(),req.user.preferredTopics.reverse());
+        });
+        
+        topics = topics.slice(currIndex, currIndex+10);
+        topics.forEach(function (a) {
+            a.isFollowing = (req.user.preferredTopics.includes(a.name));
+            a.followedBy = [];
+            a.stories = [];
+        });
+        res.status(200).json({success:true,topics});
 
     }
     catch (e) {

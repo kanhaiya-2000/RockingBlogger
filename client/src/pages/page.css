@@ -188,13 +188,13 @@ button[data-command="save"],button[data-command="template"],button[data-command=
     background-size: cover;
 }
 .profile_tab{
-	width: 450px;
+	width: 550px;
 	display: flex;
 	align-items: center;
     margin-top:30px;
     margin-left:100px;
     cursor: pointer;
-	justify-content: space-between;
+	
     
 }
 
@@ -373,11 +373,25 @@ p{
 .html_content img{
     width:100%;
 }
+.p_tabs{    
+    margin-left:20px;
+    justify-content: space-around;    
+    min-width:450px;
+    overflow: auto hidden !important;
+    white-space: nowrap;
+    display:inline-flex;
+}
+.p_tabs div{
+    margin-left:25px;
+}
 
 @media screen and (max-width:675px){
-    .profile_tab{
-        width:calc(100% - 25px);
+    .profile_tab{        
         margin-left:10px;
+        width:auto;
+        overflow:auto hidden;
+        padding-bottom: 15px;
+        
     }
     .profile_tab_content{
         margin-left:10px;

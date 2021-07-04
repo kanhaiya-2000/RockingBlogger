@@ -1,6 +1,35 @@
 const jwt = require("jsonwebtoken");
 const Userdb = require("../models/User");
 
+exports.VerifyWithoutThrowingError = async(req,res,next)=>{    
+
+    try{
+        if (
+            req.headers.authorization &&
+            req.headers.authorization.startsWith("Bearer")
+        ) {
+            token = req.headers.authorization.split(" ")[1];
+            const decoded = jwt.verify(token,process.env.JWT_SECRET);
+            const user = await Userdb.findOne({_id:decoded.id}).populate({
+                path:"unseennotice",
+                select:"sender"
+            });
+            if(user&&user.tempid!=decoded.tempid){//This is the only exception to this method
+                return next({
+                    logout:true,
+                    message:"Please login again",
+                    statusCode:403
+                })
+            }
+            req.user = user;
+        }
+    }
+    catch(e){
+        console.log("line-28,middleware/auth.js",e);
+    }
+
+}
+
 exports.Verify = async (req, res, next) => {
     let token;
 
