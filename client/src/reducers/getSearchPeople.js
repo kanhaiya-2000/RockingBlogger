@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const getSearchedUser = createAsyncThunk("user/search", async ({currIndex,term}) => {
+export const FetchSearchedUser = createAsyncThunk("user/search", async ({currIndex,term}) => {
   const body = {
     term
   }
@@ -27,7 +27,7 @@ const SearchedUserSlice = createSlice({
   },
   
   extraReducers: {
-    [getSearchedUser.fulfilled]: (state, action) => {
+    [FetchSearchedUser.fulfilled]: (state, action) => {
       state.isFetching = action.payload.users.length!=0;
       state.currIndex = state.currIndex + action.payload.users.length;
       state.SearchedUsers = [...state.SearchedUsers,action.payload.users];

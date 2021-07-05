@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const getpopularStory = createAsyncThunk("story/popular", async ({limit,topic}) => {
+export const Fetchpopularstories = createAsyncThunk("story/popular", async ({limit,topic}) => {
   const data  = await FetchData(`/story/popular/${topic}?limit=${limit}`);
   return data;
 });
@@ -22,7 +22,7 @@ const popularStorySlice = createSlice({
     }
   },
   extraReducers: {
-    [getpopularStory.fulfilled]: (state, action) => {
+    [Fetchpopularstories.fulfilled]: (state, action) => {
       state.isfetchingpopular = false;      
       state.popularStories = action.payload.stories;
     },

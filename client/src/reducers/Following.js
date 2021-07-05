@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const getFollowingStory = createAsyncThunk("user/followingstories", async ({currindex}) => {
+export const FetchFollowingStory = createAsyncThunk("user/followingstories", async ({currindex}) => {
   const data  = await FetchData(`/user/getfollowingstory?currindex=${currindex}`);
   return data;
 });
@@ -23,7 +23,7 @@ const FollowingStorySlice = createSlice({
     }
   },
   extraReducers: {
-    [getFollowingStory.fulfilled]: (state, action) => {
+    [FetchFollowingStory.fulfilled]: (state, action) => {
       state.isFetching = !action.payload.isEnded;
       state.currindex = state.currindex + action.payload.stories.length;
       state.Followingstories = [...state.Followingstories,action.payload.stories];

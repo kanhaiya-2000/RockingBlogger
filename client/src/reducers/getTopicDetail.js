@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const getTopicdetail = createAsyncThunk("story/topicdetail", async ({topicname}) => {
+export const FetchTopicdetail = createAsyncThunk("story/topicdetail", async ({topicname}) => {
   const data  = await FetchData(`/story/gettopicdetail/${topicname}`);
   return data;
 });
@@ -13,7 +13,7 @@ const TopicdetailSlice = createSlice({
     topicDetail: {},    
   },
   extraReducers: {
-    [getTopicdetail.fulfilled]: (state, action) => {
+    [FetchTopicdetail.fulfilled]: (state, action) => {
       state.isfetching = false;      
       state.topicDetail = action.payload.topic;
     },

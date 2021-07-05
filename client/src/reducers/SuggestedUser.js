@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const getSuggestedUser = createAsyncThunk("user/suggested", async ({limit}) => {
+export const FetchSuggestedUser = createAsyncThunk("user/suggested", async ({limit}) => {
   const data  = await FetchData(`/user/getsuggesteduser?limit=${limit}`);
   return data;
 });
@@ -23,7 +23,7 @@ const SuggestedUserSlice = createSlice({
     }
   },
   extraReducers: {
-    [getSuggestedUser.fulfilled]: (state, action) => {
+    [FetchSuggestedUser.fulfilled]: (state, action) => {
       state.isFetchingSuggestedUsers = false;      
       state.SuggestedUsers = action.payload.users;
     },

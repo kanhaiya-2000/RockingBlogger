@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const getProfile = createAsyncThunk("user/profile", async ({user}) => {
+export const FetchProfile = createAsyncThunk("user/profile", async ({user}) => {
   const data  = await FetchData(`/user/${user}`);
   return data;
 });
@@ -13,7 +13,7 @@ const ProfileSlice = createSlice({
     profile: {},    
   },
   extraReducers: {
-    [getProfile.fulfilled]: (state, action) => {
+    [FetchProfile.fulfilled]: (state, action) => {
       state.isFetchingProfile = false;      
       state.profile = action.payload.profile;
     },
