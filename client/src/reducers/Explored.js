@@ -13,6 +13,15 @@ const ExploredSlice = createSlice({
     exploredstories: [],
     currIndex:0,
   },
+  reducers:{    
+    SaveUnsaveStoryInExplored(state,action){
+      state.exploredstories.forEach(function(x){
+        if(x._id===action.payload){
+          x.isSaved = !x.isSaved;
+        }
+      })
+    }
+  },
   extraReducers: {
     [getExplored.fulfilled]: (state, action) => {
       state.isFetching = !action.payload.isEnded;
@@ -21,5 +30,9 @@ const ExploredSlice = createSlice({
     },
   },
 });
+
+export const {
+  SaveUnsaveStoryInExplored
+} = ExploredSlice.actions;
 
 export default ExploredSlice.reducer;

@@ -13,6 +13,18 @@ const SavedStorySlice = createSlice({
     SavedStories: [],
     curr5Index:0,
   },
+  reducers:{    
+    addToSaved(state,action){
+      state.SavedStories = [
+        action.payload,
+        ...state.SavedStories
+      ]
+    },
+    removeFromSaved(state,action){
+      state.SavedStories = state.SavedStories.filter(x=>x._id!==action.payload)
+      
+    }
+  },
   extraReducers: {
     [getSavedStory.fulfilled]: (state, action) => {
       state.isFetchingSaved = action.payload.stories.length!==0;
@@ -21,5 +33,10 @@ const SavedStorySlice = createSlice({
     },
   },
 });
+
+export const {
+  addToSaved,
+  removeFromSaved
+} = SavedStorySlice.actions;
 
 export default SavedStorySlice.reducer;

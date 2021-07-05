@@ -13,6 +13,15 @@ const FollowingStorySlice = createSlice({
     Followingstories: [],
     currindex:0,
   },
+  reducers:{    
+    SaveUnsaveStory(state,action){
+      state.Followingstories.forEach(function(x){
+        if(x._id===action.payload){
+          x.isSaved = !x.isSaved;
+        }
+      })
+    }
+  },
   extraReducers: {
     [getFollowingStory.fulfilled]: (state, action) => {
       state.isFetching = !action.payload.isEnded;
@@ -21,5 +30,9 @@ const FollowingStorySlice = createSlice({
     },
   },
 });
+
+export const {
+  SaveUnsaveStory
+} = FollowingStorySlice.actions;
 
 export default FollowingStorySlice.reducer;

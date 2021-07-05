@@ -16,6 +16,16 @@ const SearchedUserSlice = createSlice({
     SearchedUsers: [],
     currIndex:0,
   },
+  reducers:{    
+    FollowUnfollowSearchPeople(state,action){
+      state.SearchedUsers.forEach(function(x){
+        if(x._id===action.payload){
+          x.isFollowing = !x.isFollowing;
+        }
+      })
+    }
+  },
+  
   extraReducers: {
     [getSearchedUser.fulfilled]: (state, action) => {
       state.isFetching = action.payload.users.length!=0;
@@ -24,5 +34,9 @@ const SearchedUserSlice = createSlice({
     },
   },
 });
+
+export const {
+  FollowUnfollowSearchPeople
+} = SearchedUserSlice.actions;
 
 export default SearchedUserSlice.reducer;

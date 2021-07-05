@@ -12,6 +12,15 @@ const suggestedTopicSlice = createSlice({
     isfetchingsuggestedtopic: true,
     suggestedtopics: [],    
   },
+  reducers:{    
+    FollowUnfollowSuggestedTopic(state,action){
+      state.suggestedtopics.forEach(function(x){
+        if(x._id===action.payload){
+          x.isFollowing = !x.isFollowing;
+        }
+      })
+    }
+  },
   extraReducers: {
     [getsuggestedTopic.fulfilled]: (state, action) => {
       state.isfetchingsuggestedtopic = action.payload.topics!==0;     
@@ -20,5 +29,9 @@ const suggestedTopicSlice = createSlice({
     },
   },
 });
+
+export const {
+  FollowUnfollowSuggestedTopic
+} = suggestedTopicSlice.actions;
 
 export default suggestedTopicSlice.reducer;

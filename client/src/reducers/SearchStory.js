@@ -13,13 +13,25 @@ const SearchedstorySlice = createSlice({
     Searchedstories: [],
     curr2Index:0,
   },
+  reducers:{    
+    SaveUnsaveSearchStory(state,action){
+      state.Searchedstories.forEach(function(x){
+        if(x._id===action.payload){
+          x.isSaved = !x.isSaved;
+        }
+      })
+    }
+  },
   extraReducers: {
     [getSearchedstory.fulfilled]: (state, action) => {
-      state.isFetchingStory = action.payload.stories.length!==0;
+      state.isFetchingStory = (action.payload.stories.length!==0);
       state.curr2index = state.curr2Index + action.payload.stories.length;
       state.Searchedstories = [...state.Searchedstories,action.payload.stories];
     },
   },
 });
+export const {
+  SaveUnsaveSearchStory
+} = SearchedstorySlice.actions;
 
 export default SearchedstorySlice.reducer;

@@ -2,9 +2,9 @@ const express = require("express");
 const { getStory, trendingStories, addComment,toggleLikeComment, reportStory, searchStory, editStory, toggleLike, deleteComment,getLatestStories,getPopularStories,getTopicDetail} = require("../controllers/story");
 const router = express.Router();
 
-const { Verify, VerifyWithoutThrowingError } = require("../middleware/auth");
+const { Verify, VerifyWithoutThrowingError } = require("../middleware/auth"); 
  
-router.route("/:sid").post(VerifyWithoutThrowingError,getStory);
+router.route("/:sid").get(VerifyWithoutThrowingError,getStory);
 router.route("/latest/:topic").get(VerifyWithoutThrowingError,getLatestStories);
 router.route("/popular/:topic").get(VerifyWithoutThrowingError,getPopularStories);
 router.route("/gettopicdetail/:topic").get(VerifyWithoutThrowingError,getTopicDetail);
@@ -16,6 +16,7 @@ router.route("/deletecomment/:cid").delete(Verify,deleteComment);
 router.route("/report/:sid").post(Verify,reportStory);
 router.route("/search").post(VerifyWithoutThrowingError,searchStory);
 router.route("/:sid").put(Verify,editStory);
+router.route("/fetchcomments/:sid").get(VerifyWithoutThrowingError)
 
 
 module.exports = router;

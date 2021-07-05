@@ -12,6 +12,15 @@ const popularStorySlice = createSlice({
     isfetchingpopular: true,
     popularStories: [],    
   },
+  reducers:{    
+    SaveUnsavePopularStory(state,action){
+      state.popularStories.forEach(function(x){
+        if(x._id===action.payload){
+          x.isSaved = !x.isSaved;
+        }
+      })
+    }
+  },
   extraReducers: {
     [getpopularStory.fulfilled]: (state, action) => {
       state.isfetchingpopular = false;      
@@ -19,5 +28,9 @@ const popularStorySlice = createSlice({
     },
   },
 });
+
+export const {
+  SaveUnsavePopularStory
+} = popularStorySlice.actions;
 
 export default popularStorySlice.reducer;

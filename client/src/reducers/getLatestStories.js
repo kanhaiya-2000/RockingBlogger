@@ -12,6 +12,15 @@ const LatestStorySlice = createSlice({
     isfetchinglatest: true,
     latestStories: [],    
   },
+  reducers:{    
+    SaveUnsaveLatestStory(state,action){
+      state.lateststories.forEach(function(x){
+        if(x._id===action.payload){
+          x.isSaved = !x.isSaved;
+        }
+      })
+    }
+  },
   extraReducers: {
     [getLatestStory.fulfilled]: (state, action) => {
       state.isfetchinglatest = false;      
@@ -19,5 +28,9 @@ const LatestStorySlice = createSlice({
     },
   },
 });
+
+export const {
+  SaveUnsaveLatestStory
+} = LatestStorySlice.actions;
 
 export default LatestStorySlice.reducer;

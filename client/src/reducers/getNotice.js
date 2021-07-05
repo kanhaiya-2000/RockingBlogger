@@ -13,6 +13,17 @@ const NoticeSlice = createSlice({
     notices: [],
     currIndex:0,
   },
+  reducers:{
+    addToNoticeList(state,action){
+      state.notices = [
+        action.payload,
+        ...state.notices
+      ]
+    },
+    removeFromNoticeList(state,action){
+      state.notices = state.notices.filter(function(x){return x._id!==action.payload})
+    }
+  },
   extraReducers: {
     [getNotice.fulfilled]: (state, action) => {
       state.isFetching = action.payload.notices.length!==0;
@@ -21,5 +32,10 @@ const NoticeSlice = createSlice({
     },
   },
 });
+
+export const {
+  addToNoticeList,
+  removeFromNoticeList
+} = NoticeSlice.actions;
 
 export default NoticeSlice.reducer;

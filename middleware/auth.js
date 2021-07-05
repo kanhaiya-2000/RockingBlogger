@@ -26,6 +26,7 @@ exports.VerifyWithoutThrowingError = async(req,res,next)=>{
     }
     catch(e){
         console.log("line-28,middleware/auth.js",e);
+        next();
     }
 
 }

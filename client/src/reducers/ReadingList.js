@@ -13,6 +13,24 @@ const readingListSlice = createSlice({
     readingList: [],
     curr5Index:0,
   },
+  reducers:{    
+    SaveUnsaveReadStory(state,action){
+      state.readingList.forEach(function(x){
+        if(x._id===action.payload){
+          x.isSaved = !x.isSaved;
+        }
+      })
+    },
+    addToReadingList(state,action){
+      state.readingList = [
+        action.payload,
+        ...state.readingList
+      ]
+    },
+    removeFromReadingList(state,action){
+      state.readingList = state.readingList.filter(function(x){return x._id!==action.payload})
+    }
+  },
   extraReducers: {
     [getreadingList.fulfilled]: (state, action) => {
       state.isFetchingreadingList = action.payload.stories.length!==0;
@@ -21,5 +39,11 @@ const readingListSlice = createSlice({
     },
   },
 });
+
+export const {
+  SaveUnsaveReadStory,
+  addToReadingList,
+  removeFromReadingList
+} = readingListSlice.actions;
 
 export default readingListSlice.reducer;

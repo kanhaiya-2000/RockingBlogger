@@ -13,6 +13,24 @@ const MystorySlice = createSlice({
     Mystories: [],
     currIndex:0,
   },
+  reducers:{    
+    SaveUnsaveMyStory(state,action){
+      state.Mystories.forEach(function(x){
+        if(x._id===action.payload){
+          x.isSaved = !x.isSaved;
+        }
+      })
+    },
+    addToMyStoryList(state,action){
+      state.Mystories = [
+        action.payload,
+        ...state.Mystories
+      ]
+    },
+    removeFromMyStoryList(state,action){
+      state.Mystories = state.Mystories.filter(function(x){return x._id!==action.payload})
+    }
+  },
   extraReducers: {
     [getMystory.fulfilled]: (state, action) => {
       state.isFetchingMyStories = action.payload.stories.length!==0;
@@ -21,5 +39,11 @@ const MystorySlice = createSlice({
     },
   },
 });
+
+export const {
+  SaveUnsaveMyStory,
+  addToMyStoryList,
+  removeFromMyStoryList
+} = MystorySlice.actions;
 
 export default MystorySlice.reducer;

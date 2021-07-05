@@ -13,6 +13,15 @@ const SuggestedUserSlice = createSlice({
     SuggestedUsers: [],
     
   },
+  reducers:{    
+    FollowUnfollowSuggestedUser(state,action){
+      state.SuggestedUsers.forEach(function(x){
+        if(x._id===action.payload){
+          x.isFollowing = !x.isFollowing;
+        }
+      })
+    }
+  },
   extraReducers: {
     [getSuggestedUser.fulfilled]: (state, action) => {
       state.isFetchingSuggestedUsers = false;      
@@ -20,5 +29,9 @@ const SuggestedUserSlice = createSlice({
     },
   },
 });
+
+export const {
+  FollowUnfollowSuggestedUser
+} = SuggestedUserSlice.actions;
 
 export default SuggestedUserSlice.reducer;

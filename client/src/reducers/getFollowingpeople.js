@@ -13,6 +13,24 @@ const FollowingpeopleSlice = createSlice({
     Followingpeople: [],
     currIndex:0,
   },
+  reducers:{
+    FollowUnfollowStatusInAlreadyFollowing(state,action){
+      state.Followingpeople.forEach(function(x){
+        if(x._id===action.payload){
+          x.isFollowing = !x.isFollowing;
+        }
+      })
+    },
+    addToFollowingList(state,action){
+      state.Followingpeople = [
+        action.payload,
+        ...state.Followingpeople
+      ]
+    },
+    removeFromFollowingList(state,action){
+      state.Followingpeople = state.Followingpeople.filter(function(x){return x._id!==action.payload})
+    }
+  },
   extraReducers: {
     [getFollowingpeople.fulfilled]: (state, action) => {
       state.isFetchingfollowing = action.payload.users.length!==0;
@@ -21,5 +39,11 @@ const FollowingpeopleSlice = createSlice({
     },
   },
 });
+
+export const {
+  FollowUnfollowStatusInAlreadyFollowing,
+  addToFollowingList,
+  removeFromFollowingList
+} = FollowingpeopleSlice.actions;
 
 export default FollowingpeopleSlice.reducer;

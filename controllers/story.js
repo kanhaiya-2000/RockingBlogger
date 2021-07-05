@@ -28,12 +28,16 @@ exports.getStory = async (req, res, next) => {
                 message: "Story not found"
             })
         }
-        story.isMine = story.user._id.toString() === req.user.id;
-        story.likesCount = story.likedBy.length;
-        story.isLiked = story.likedBy.toString().includes(req.user.id);
+        if(req.user){
+            story.isMine = story.user._id.toString() === req.user.id;
+            story.isLiked = story.likedBy.toString().includes(req.user.id);
+        }
+        story.likesCount = story.likedBy.length;        
         story.likedBy = [];
+        story.comments = story.comments.slice(0,5);
         story.comments.forEach(function (t) {
-            t.isMine = (comment.user._id.toString() == req.user.id);
+            t.isMine = req.user&&(comment.user._id.toString() == req.user.id);
+            t.isLiked = req.user&&(comment.likedBy.toString().includes(req.user.id))
             t.likesCount = (t.likedBy.length);
             t.likedBy = [];
         });
@@ -438,6 +442,34 @@ exports.editStory = async (req, res, next) => {
             }
         );
         res.status(200).json({success:true});
+    }
+    catch(e){
+        return next({
+            message:"Action failed",
+            statusCode:500
+        })
+    }
+}
+
+exports.FetchComments = async(req,res,next)=>{
+    try{
+        const {currIndex} = req.query;
+        const story = await Story.findById(req.params.sid).populate({
+            path: "comments",
+            select: "text createdAt likedBy",
+            populate: {
+                path: "user",
+                select: "username avatar"
+            }
+        }).lean().exec();
+        story.comments = story.comments.slice(currIndex,currIndex+10);
+        story.comments.forEach(function (t) {
+            t.isMine = req.user&&(comment.user._id.toString() == req.user.id);
+            t.isLiked = req.user&&(comment.likedBy.toString().includes(req.user.id))
+            t.likesCount = (t.likedBy.length);
+            t.likedBy = [];
+        });
+        res.status(200).json({success:true,comments:story.comments});
     }
     catch(e){
         return next({
