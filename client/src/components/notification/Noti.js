@@ -1,8 +1,21 @@
 import { Avatar } from "@material-ui/core";
 import './Noti.css';
-import React, { useEffect } from "react";
+import React, { useEffect} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { FetchNotice } from "../../reducers/getNotice";
 
 const Noticomponents = ({ notice }) => {
+    const {isFetching,notices,currIndex} = useSelector((state)=>state.Notice);
+    const dispatch = useDispatch();
+
+    const fetchNotice = ()=>{
+        isFetching&&dispatch(FetchNotice({currIndex}))
+    }
+
+    useEffect(()=>{
+        isFetching&&dispatch(FetchNotice({currIndex}));
+    },[isFetching,dispatch,currIndex])
+
     return (
         <div className="notice_component">
             <div className="notice_avatar">

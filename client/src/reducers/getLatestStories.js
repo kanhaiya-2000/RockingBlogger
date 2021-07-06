@@ -6,7 +6,7 @@ export const FetchlatestStory = createAsyncThunk("story/latest", async ({limit,t
   return data;
 });
 
-const LatestStorySlice = createSlice({
+const LatestStorySlice = createSlice({ 
   name: "latest",
   initialState: {
     isfetchinglatest: true,

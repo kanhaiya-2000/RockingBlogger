@@ -1,11 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Article from "../components/home/Article";
+import { FetchTopicdetail } from "../reducers/getTopicDetail";
+import { Fetchpopularstories } from "../reducers/getPopularStories";
+import { FetchlatestStory } from "../reducers/getLatestStories";
 
 
 const TopicPage = () => {
     const [detail, setDetail] = React.useState({ image: "https://miro.medium.com/max/680/0*leAtiXItRsZL1OEC", latest_article: [{ author: { avatar: "https://kkleap.github.io/assets/default.jpg", name: "kanhaiya" }, header: "Can anyone leave this home?", description: "Hello this story is about something ...", publishDate: "June 14,2000", readingTime: "5 min", isSaved: true, image: "https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png" }, { author: { avatar: "https://kkleap.github.io/assets/default.jpg", name: "kanhaiya" }, header: "Can anyone leave this home?", description: "Hello this story is about something ...", publishDate: "June 14,2000", readingTime: "5 min", isSaved: false, image: "https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png" }], popularArticle: [{ author: { avatar: "https://kkleap.github.io/assets/default.jpg", name: "kanhaiya" }, header: "Can anyone leave this home?", description: "Hello this story is about something ...", publishDate: "June 14,2000", readingTime: "5 min", isSaved: true, image: "https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png" }, { author: { avatar: "https://kkleap.github.io/assets/default.jpg", name: "kanhaiya" }, header: "Can anyone leave this home?", description: "Hello this story is about something ...", publishDate: "June 14,2000", readingTime: "5 min", isSaved: false, image: "https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png" }], relatedtopic: ["Economics", "dgdghdhdh", "dghdghdhdh", "ddhdhhdhddh", "sgdhshshsh"], name: "kanhaiya", isFollowing: false, description: "kk is here to help you.But you are not here i can make you understand the fact that i can do the following " });
     const { topicname } = useParams();
+    const dispatch = useDispatch();
+    const {isFetching,topicDetail} = useSelector((state)=>state.Topicdetail);
+    const {isfetchinglatest,latestStories} = useSelector((state)=>state.latest);
+    const {isfetchingpopular,popularStories} = useSelector((state)=>state.popular);
+    
+
+    useEffect(()=>{
+        console.log(topicname);
+        const callback = function(res){
+            console.log(res);
+            if(res){
+                dispatch(Fetchpopularstories({limit:10,topic:topicname}));
+                dispatch(FetchlatestStory({limit:10,topic:topicname}));  
+            }
+        }
+        dispatch(FetchTopicdetail({topicname:topicname,callback:callback()}));
+              
+    },[topicname])
 
     return (
         <div className="topicpage">
@@ -60,7 +82,7 @@ const TopicPage = () => {
                                 {article.header}
                             </h3>
                             <div className="read">{article.readingTime}</div>
-                        </div><div class="article_image"><img src={article.image} alt=""/></div>
+                        </div><div className="article_image"><img src={article.image} alt=""/></div>
                     </div>)}
                 </div>
             </div>

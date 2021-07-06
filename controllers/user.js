@@ -38,7 +38,9 @@ exports.getUserData = async (req, res, next) => {
     try {
         // request_uri http://localhost:55000/user/getdata/:uid/?currIndex=n&data=followers
 
-        const { currIndex, data } = req.query;
+        const {data} = req.query;
+        const currIndex  = parseInt(req.query.currIndex);
+
         switch (data) {
             case "followers":
             case "following":
@@ -110,11 +112,11 @@ exports.getUserData = async (req, res, next) => {
                         message: "Please login first"
                     })
                 }
-                const user = await User.findById(req.user.id).populate({
+                user = await User.findById(req.user.id).populate({
                     path: "stories",
                     populate: "short_des readingTime title likedBy createdAt"
                 }).lean().exec();
-                user.stories.slice(currIndex, currIndex + 5).forEach(function (s) {
+                user.stories.slice(currIndex, currIndex + 5).forEach(async function (s) {
                     const isSaved = await SavedStory.findOne({ story: s._id, userid: req.user.id });
                     const isLiked = (s.likedBy.toString().indexOf(req.user.id) > -1);
                     s.isLiked = isLiked;
@@ -336,7 +338,7 @@ exports.getFollowingStories = async (req, res, next) => {
             path: "user",
             select: "username avatar"
         }).lean().exec();
-        const { currIndex } = req.query;
+        const currIndex  = parseInt(req.query.currIndex);
         stories = stories.slice(currIndex, currIndex + 5);
 
         for (const s of stories) {
@@ -431,7 +433,7 @@ exports.sendNotice = async (req, res, next) => {
         await User.findByIdAndUpdate(req.user.id, {
             $set: { unseennotice: [] }
         });
-        res.status(200).json({ success: true, unseennotice: 0, notices: notices.slice(req.query.currIndex, req.query.currIndex + 10) });
+        res.status(200).json({ success: true, unseennotice: 0, notices: notices.slice(parseInt(req.query.currIndex), parseInt(req.query.currIndex) + 10) });
     }
     catch (e) {
         return next({
@@ -528,12 +530,16 @@ exports.togglefollowTopic = async (req, res, next) => {
 
 exports.searchUser = async (req, res, next) => {
     try {
-        if (!req.body.term) {
-            return;
+        if(!req.body.term){
+            return next({
+                message:"Search term is required",
+                statusCode:400
+            });
         }
+        const currIndex = parseInt(req.query.currIndex);
         ////console.log(req.user);
         const regex = new RegExp(req.body.term, "i");
-        const currIndex = parseInt(req.query.currIndex);
+        
         User.find({ $or: [{ fullname: regex }, { username: regex }] }).select("username fullname avatar").then((data) => {
             data = data.filter(function (d) {
                 return d.username != req.user.username;
@@ -610,14 +616,15 @@ exports.getSuggestedStory = async (req, res, next) => {
         }).lean().exec();
         if (!req.user) {
 
-            const { currIndex } = req.query;
+            const currIndex = parseInt(req.query.currIndex);
             stories.reverse();
             data = stories.slice(currIndex, currIndex + 5);
             res.status(200).json({ success: true, stories: data, currIndex: currIndex, isEnded: data.length == 0 });
+            //console.log("processing...");
             return;
         }
         let data2 = [];
-
+        
         stories.forEach(function (t) {
             for (const i of t.topics) {
                 if (req.user.preferredTopics.indexOf(i) > -1) {
@@ -683,7 +690,7 @@ exports.getSuggestedUser = async (req, res, next) => {
 
 exports.getsuggestedTopic = async (req, res, next) => {
     try {
-        const priority = (a,b,c)=>{
+        const priority = async(a,b,c)=>{
             let prty=0;
             for(const i of b){
                 const user = await User.findById(i);                
@@ -699,7 +706,7 @@ exports.getsuggestedTopic = async (req, res, next) => {
                 }
             }
         }
-        const { currIndex } = req.query;
+        const currIndex  = parseInt(req.query.currIndex);
         if(req.query.trending){
             topics = await Topic.find({}).select("name followedBy").lean().exec();
             topics = topics.sort(function (a, b) {
@@ -747,6 +754,7 @@ exports.getsuggestedTopic = async (req, res, next) => {
 
     }
     catch (e) {
+        console.log(e);
         return next({
             statusCode: 500,
             message: "Action failed"

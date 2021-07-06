@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './Follow.css';
 import Avatar from "@material-ui/core/Avatar";
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import { useDispatch, useSelector } from "react-redux";
+import { FetchSuggestedUser } from "../../reducers/SuggestedUser";
+import { FetchsuggestedTopic } from "../../reducers/getSuggestedTopic";
 
 export const UserCard = ({people})=>{
     return <div className="usercard">
@@ -41,7 +44,29 @@ export const TopicCard = ({topic})=>{
 const FollowPagecontent = ({tabstate})=>{
     const [suggestedPeople,setPeople] = useState([{avatar:"https://cdn-images-1.medium.com/fit/c/60/60/1*vX3DADUFGFyyeoapA_MG6A.jpeg",username:"Vishnu*s Virtues",description:"Let’s achieve our writing dreams together | Topics: writing and relationships | Californian, Malaysian| 750K+ Med views. Blog: https://www.vishnusvirtues.com/",isFollowing:true},{avatar:"https://cdn-images-1.medium.com/fit/c/60/60/1*vX3DADUFGFyyeoapA_MG6A.jpeg",username:"Vishnu*s Virtues",description:"Let’s achieve our writing dreams together | Topics: writing and relationships | Californian, Malaysian| 750K+ Med views. Blog: https://www.vishnusvirtues.com/",isFollowing:true}]);
     const [suggestedTopics,setTopics] = useState([{coverImage:"https://cdn-images-1.medium.com/fit/c/280/180/1*H2blBoEmzkSusI_a4Bk0dg@2x.jpeg",name:"chat",isFollowing:false},{coverImage:"https://cdn-images-1.medium.com/fit/c/280/180/1*H2blBoEmzkSusI_a4Bk0dg@2x.jpeg",name:"chat",isFollowing:true}]);
-     
+
+    const {isFetchingSuggestedUsers,SuggestedUsers} = useSelector((state)=>state.suggesteduser);
+    const {isfetchingsuggestedtopic,suggestedtopics,currIndex2} =useSelector((state)=>state.suggestedtopic);
+    const dispatch = useDispatch();
+    
+
+    const fetchData = ()=>{
+        if(tabstate===0&&isFetchingSuggestedUsers){
+            dispatch(FetchSuggestedUser({limit:20}));
+        }
+        if(tabstate===1&&isfetchingsuggestedtopic){
+            dispatch(FetchsuggestedTopic({currIndex2}));
+        }
+    }
+    useEffect(()=>{
+        if(tabstate===0&&isFetchingSuggestedUsers){
+            dispatch(FetchSuggestedUser({limit:20}));
+        }
+        if(tabstate===1&&isfetchingsuggestedtopic){
+            dispatch(FetchsuggestedTopic({currIndex2}));
+        }
+    },[tabstate,isFetchingSuggestedUsers,isfetchingsuggestedtopic,currIndex2,dispatch]);
+
     return <div className="followtabcontent">{
         tabstate===0&&(
             suggestedPeople.map(people=><UserCard people={people}/>)

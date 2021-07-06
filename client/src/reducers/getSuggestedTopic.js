@@ -10,7 +10,8 @@ const suggestedTopicSlice = createSlice({
   name: "suggestedtopic",
   initialState: {
     isfetchingsuggestedtopic: true,
-    suggestedtopics: [],    
+    suggestedtopics: [],
+    currIndex2:0,    
   },
   reducers:{    
     FollowUnfollowSuggestedTopic(state,action){
@@ -23,7 +24,7 @@ const suggestedTopicSlice = createSlice({
   },
   extraReducers: {
     [FetchsuggestedTopic.fulfilled]: (state, action) => {
-      state.isfetchingsuggestedtopic = action.payload.topics!==0;     
+      state.isfetchingsuggestedtopic = action.payload.topics.length!==0;     
       state.currIndex2 = state.currIndex2 + action.payload.topics.length; 
       state.suggestedtopics = [...state.suggestedtopics,action.payload.topics];
     },

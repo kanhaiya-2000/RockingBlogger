@@ -6,7 +6,7 @@ export const FetchTrending = createAsyncThunk("story/trending", async ({currInde
   return data;
 });
 
-const TrendingSlice = createSlice({
+const TrendingSlice = createSlice({ 
   name: "trendingStory",
   initialState: {
     isFetching: true,

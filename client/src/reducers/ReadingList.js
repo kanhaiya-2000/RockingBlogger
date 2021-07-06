@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const FetchreadingList = createAsyncThunk("user/readingList", async ({curr5Index}) => {
-  const data  = await FetchData(`/user/getuserdata?currIndex=${curr5Index}&data=readinglist`);
+export const FetchreadingList = createAsyncThunk("user/readingList", async ({curr3Index,user}) => {
+  const data  = await FetchData(`/user/getuserdata/${user}?currIndex=${curr3Index}&data=readinglist`);
   return data;
 });
 
@@ -11,7 +11,7 @@ const readingListSlice = createSlice({
   initialState: {
     isFetchingreadingList:true,
     readingList: [],
-    curr5Index:0,
+    curr3Index:0,
   },
   reducers:{    
     SaveUnsaveReadStory(state,action){
@@ -34,7 +34,7 @@ const readingListSlice = createSlice({
   extraReducers: {
     [FetchreadingList.fulfilled]: (state, action) => {
       state.isFetchingreadingList = action.payload.stories.length!==0;
-      state.curr5index = state.curr5Index + action.payload.stories.length;
+      state.curr3index = state.curr3Index + action.payload.stories.length;
       state.readingList = [...state.readingList,action.payload.stories];
     },
   },

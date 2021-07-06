@@ -22,7 +22,9 @@ exports.VerifyWithoutThrowingError = async(req,res,next)=>{
                 })
             }
             req.user = user;
+            
         }
+        next();
     }
     catch(e){
         console.log("line-28,middleware/auth.js",e);

@@ -52,7 +52,7 @@ exports.getStory = async (req, res, next) => {
         })
     }
 
-}
+} 
 
 exports.getLatestStories = async(req,res,next)=>{
     try{
@@ -116,6 +116,12 @@ exports.getTopicDetail = async(req,res,next)=>{
                 select:"name"
             }
         }).lean().exec();
+        if(!topic){
+            return next({
+                message:"No such topic",
+                statusCode:404
+            })
+        }
         topic.relatedTopics =[];
         topic.isFollowing = req.user&&topic.followedBy.toString().includes(req.user.id);
         topic.followedBy = [];
@@ -132,6 +138,7 @@ exports.getTopicDetail = async(req,res,next)=>{
         res.status(200).json({success:true,topic});
     }
     catch(e){
+        console.log(e.message);
         return next({
             statusCode:500,
             message:"Failed to complete request"
@@ -142,15 +149,20 @@ exports.getTopicDetail = async(req,res,next)=>{
 exports.trendingStories = async (req, res, next) => {
     try {
         let stories = await Story.find({});
+        if(!stories||stories.length<2){
+            res.status(200).json({success:true,stories:stories});
+            return;
+        }
         stories = stories.sort(function (a, b) {
             return a.likedBy.length - b.likedBy.length;
         });
-        res.status(200).json({ success: true, stories, unseennotice: req.user.unseennotice.length })
+        res.status(200).json({ success: true, stories })
     }
     catch (e) {
+        console.log(e);
         return next({
             statusCode: 500,
-            message: "Failed to fetch stories"
+            message: e.message
         })
     }
 }
@@ -390,11 +402,17 @@ exports.reportStory = async (req, res, next) => {
 
 exports.searchStory = async (req, res, next) => {
     try{
+        console.log(req.body);
         if(!req.body.term){
-            return;
+            return next({
+                message:"Search term is required",
+                statusCode:400
+            });
         }
+        const currIndex = parseInt(req.query.currIndex);
         const regex = new RegExp(req.body.term, "i");
-        Stories = await Story.find({ $or: [{ title: regex }, { topics: { $in: [regex] } }, { short_des: regex }] }).sort("-createdAt").lean().exec();
+        Stories = await Story.find({ $or: [{ title: regex }, { short_des: regex }] }).sort("-createdAt").lean().exec();
+        Stories = Stories.slice(currIndex,currIndex+5);
         Stories.forEach(async function(story){
             story.isLiked = (story.likedBy.toString().includes(req.user.id));
             story.likesCount = story.likedBy.length;
@@ -410,6 +428,7 @@ exports.searchStory = async (req, res, next) => {
 
     }
     catch(e){
+        console.log(e);
         return next({
             message:"Action failed",
             statusCode:500
@@ -453,7 +472,7 @@ exports.editStory = async (req, res, next) => {
 
 exports.FetchComments = async(req,res,next)=>{
     try{
-        const {currIndex} = req.query;
+        const currIndex  = parseInt(req.query.currIndex);
         const story = await Story.findById(req.params.sid).populate({
             path: "comments",
             select: "text createdAt likedBy",

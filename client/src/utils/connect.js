@@ -11,7 +11,7 @@ export const FetchData = async(endpoint, { body, ...customConfig } = {}) => {
 
     const config = {
         method: body ? "POST" : "GET",
-        url: `${process.env.REACT_APP_BE}/api/v1/${endpoint}`,
+        url: `${process.env.REACT_APP_BE}/api/v1${endpoint}`,
         ...customConfig,
         headers: {
             ...headers,
@@ -20,12 +20,12 @@ export const FetchData = async(endpoint, { body, ...customConfig } = {}) => {
     };
 
     if (body) {
-        config.body = JSON.stringify(body);
+        config.data = JSON.stringify(body);
     }
 
-
+    //console.log(config);
     const { data } = await axios(config);
-
+    
     if (data.logout) {
         localStorage.clear();
         window.location.reload();

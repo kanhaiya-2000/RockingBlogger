@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { Redirect } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from 'react-toast-notifications'
@@ -9,16 +9,34 @@ import ReadingList from "../components/home/ReadingList";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { useHistory } from "react-router-dom";
 import { NotifyUser } from "../utils/NotifyUser";
-import { FetchData } from "../utils/connect";
+import { FetchExplored } from "../reducers/Explored";
+import { FetchTrendingTopic } from "../reducers/TrendingTopic";
+import { FetchreadingList } from "../reducers/ReadingList";
+import { FetchSuggestedUser } from "../reducers/SuggestedUser";
+import { FetchFollowingStory } from "../reducers/Following";
+
 
 
 
 const Homepage = ()=>{
     const [selected,setSelected] = React.useState(0);
     const history = useHistory();
+    const dispatch = useDispatch();
     const {addToast} = useToasts();
-    const [fetched1,setFetched1] = React.useState(false);
-    const [fetched2,setFetched2] = React.useState(false);
+    const {exploredstories,currIndex,isFetching} = useSelector((state)=>state.explore);
+    const {data} = useSelector((state)=>state.user);
+    const {isFetchingfollowingstories,Followingstories,currindex} = useSelector((state)=>state.followingstory);
+    const {isfetchingtrendingtopic,trendingtopics} = useSelector((state)=>state.trendingtopic);
+    const {isFetchingreadingList,curr5Index,readingList} = useSelector((state)=>state.readingList);
+    const {isFetchingSuggestedUsers,SuggestedUsers} = useSelector((state)=>state.suggesteduser);
+
+    useEffect(()=>{
+        dispatch(FetchExplored({currIndex}));
+        dispatch(FetchTrendingTopic({}));
+        data?.username&&dispatch(FetchreadingList({curr5Index,uid:data.username}));
+        dispatch(FetchSuggestedUser({limit:5}));
+        //console.log(exploredstories,currIndex,isFetching);
+    },[dispatch,currIndex,curr5Index,data])
     
     const isAuthenticated = localStorage.getItem("user");
     const [articleType1,setArticleType1] = React.useState([{author:{avatar:"https://kkleap.github.io/assets/default.jpg",name:"kanhaiya"},header:"Can anyone leave this home?",description:"Hello this story is about something ...",publishDate:"June 14,2000",readingTime:"5 min",isSaved:true,image:"https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png"},{author:{avatar:"https://kkleap.github.io/assets/default.jpg",name:"kanhaiya"},header:"Can anyone leave this home?",description:"Hello this story is about something ...",publishDate:"June 14,2000",readingTime:"5 min",isSaved:false,image:"https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png"}]);
@@ -28,15 +46,12 @@ const Homepage = ()=>{
        // NotifyUser({type:"success",content:"Welcome to the rockingblogger",addToast})
         switch(type){
             case 0:
-                setSelected(0);
-                !fetched1&&FetchData("/user/getsuggestedstory",{method:"POST"}).then(data=>{
-                    setArticleType1(data);
-                }).catch(err=>{
-                    NotifyUser({type:"error",content:"Failed to fetch stories",addToast})
-                })
+                setSelected(0);      
+                isFetching&&dispatch(FetchExplored({currIndex}));          
                 return;
             case 1:
                 setSelected(1);
+                isFetchingfollowingstories&&dispatch(FetchFollowingStory({currIndex:currindex}));
                 return;
             default:
                 break;

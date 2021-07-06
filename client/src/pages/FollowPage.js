@@ -1,6 +1,6 @@
 import React from "react";
 import FollowTabComponent from "../components/follow/FollowTabComponent";
-import FollowPagecontent from "../components/follow/FollowPagecontent";
+import FollowPagecontent from "../components/follow/FollowPagecontent"; 
 
 const FollowPage = ()=>{
     const [tabstate,setState] = React.useState(0);

@@ -10,7 +10,7 @@ import FollowPage from './pages/FollowPage';
 import Navbar from './components/navbar/Navbar';
 import Auth from './components/auth/Auth';
 import Trending from "./pages/Trending";
-import TopicPage from './pages/TopicPage';
+import TopicPage from './pages/TopicPage'; 
 
 function App() {
   const isAuthenticated = localStorage.getItem("user");
@@ -31,7 +31,7 @@ function App() {
         <Route path="/search/:term" component={() => <Searchpage key={window.location.pathname} />} />
         <Route path="/follow-tag-or-people" component={FollowPage} />
         <Route path="/stories/:sid" component={() => <Blog key={window.location.pathname} />} />
-        <Route exact path="/:username" component={Profile}/>
+        <Route exact path="/:user" component={Profile}/>
         {/* <Route path="/users/:uid" component={Profile} /> */}
         <Redirect to="/" />
       </Switch>

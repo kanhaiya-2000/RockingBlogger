@@ -16,32 +16,36 @@ import getSearchPeople from "./getSearchPeople";
 import getSuggestedTopic from "./getSuggestedTopic";
 import getTopicDetail from "./getTopicDetail";
 import Profile from "./Profile";
+import story from "./story";
 import ReadingList from "./ReadingList";
 import SearchStory from "./SearchStory";
 import SuggestedUser from "./SuggestedUser";
 import TrendingStory from "./TrendingStory";
 import TrendingTopic from "./TrendingTopic";
+import user from "./user";
 
 
 
 export default combineReducers({
     explore:Explored,
-    followingStories:Following,
-    getFollowers:getFollowers,
-    getFollowing:getFollowing,
-    getLatestStories:getLatestStories,
-    getLikedStories:getLikedStories,
-    getMyStories:getMyStories,
-    getNotice:getNotice,
-    getPopularStoires:getPopularStoires,
-    getSavedStory:getSavedStory,
-    getSearchPeople:getSearchPeople,
-    getSuggestedTopic:getSuggestedTopic,
-    getTopicDetail:getTopicDetail,
-    Profile:Profile,
-    ReadingList:ReadingList,
-    SearchStory:SearchStory,
-    SuggestedUser:SuggestedUser,
-    TrendingStory:TrendingStory,
-    TrendingTopic:TrendingTopic,  
+    followingstory:Following,
+    followers:getFollowers,
+    followingpeople:getFollowing,
+    latest:getLatestStories,
+    likedstory:getLikedStories,
+    Mystories:getMyStories,
+    Notice:getNotice,
+    popular:getPopularStoires,
+    SavedStory:getSavedStory,
+    searchpeople:getSearchPeople,
+    suggestedtopic:getSuggestedTopic,
+    Topicdetail:getTopicDetail,
+    profile:Profile,
+    readingList:ReadingList,
+    searchstory:SearchStory,
+    story:story,
+    suggesteduser:SuggestedUser,
+    trendingstory:TrendingStory,
+    trendingtopic:TrendingTopic,  
+    user:user,
 });

@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const FetchLikedstory = createAsyncThunk("user/likedstory", async ({curr4Index}) => {
-  const data  = await FetchData(`/user/getuserdata?currIndex=${curr4Index}&data=likedstory`);
+export const FetchLikedstory = createAsyncThunk("user/likedstory", async ({curr4Index,user}) => {
+  const data  = await FetchData(`/user/getuserdata/${user}?currIndex=${curr4Index}&data=likedstory`);
   return data;
 });
 

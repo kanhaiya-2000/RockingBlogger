@@ -134,7 +134,7 @@ const StorySlice = createSlice({
             }
         },
         toggleLikeComment(state,action){
-            comments = state.story.comments;
+            const comments = state.story.comments;
             comments.forEach(function(x){
                 if(x._id===action.payload){
                     x.isLiked = !x.isLiked;
