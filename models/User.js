@@ -40,7 +40,7 @@ const userSchema = new Schema({
     avatar: {
       type: String,
       default:
-        "https://kkleap.github.io/assets/default.jpg",      
+        "",      
     },
     cover:{
       type:String,

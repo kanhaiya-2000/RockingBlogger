@@ -23,20 +23,30 @@ const SavedStorySlice = createSlice({
     removeFromSaved(state,action){
       state.SavedStories = state.SavedStories.filter(x=>x._id!==action.payload)
       
+    },
+    saveUnsaveInSavedList(state,action){
+      state.SavedStories.forEach(function(x){
+        //console.log(x);
+        if(x._id===action.payload){
+          //console.log("huhu");
+          x.isSaved = !x.isSaved;
+        }
+      })
     }
   },
   extraReducers: {
     [FetchSavedStory.fulfilled]: (state, action) => {
       state.isFetchingSaved = action.payload.stories.length!==0;
-      state.curr5index = state.curr5Index + action.payload.stories.length;
-      state.SavedStories = [...state.SavedStories,action.payload.stories];
+      state.curr5Index = state.curr5Index + action.payload.stories.length;
+      state.SavedStories = [...state.SavedStories,...action.payload.stories];
     },
   },
 });
 
 export const {
   addToSaved,
-  removeFromSaved
+  removeFromSaved,
+  saveUnsaveInSavedList
 } = SavedStorySlice.actions;
 
 export default SavedStorySlice.reducer;

@@ -35,7 +35,7 @@ const MystorySlice = createSlice({
     [FetchMystory.fulfilled]: (state, action) => {
       state.isFetchingMyStories = action.payload.stories.length!==0;
       state.currindex = state.currindex + action.payload.stories.length;
-      state.Mystories = [...state.Mystories,action.payload.stories];
+      state.Mystories = [...state.Mystories , ...action.payload.stories];
     },
   },
 });

@@ -37,7 +37,7 @@ const errorHandler = (err, req, res, next) => {
       statusCode = 400;
     }
   
-    res.status(statusCode).json({ success: false, message,logout:err.logout,refreshPage:err.refreshPage });
+    res.status(200).json({ success: false,error:true, message,logout:err.logout,refreshPage:err.refreshPage });
   };
   
   module.exports = errorHandler;

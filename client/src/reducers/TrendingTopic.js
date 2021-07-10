@@ -13,6 +13,10 @@ const TrendingTopicSlice = createSlice({
     trendingtopics: [],    
   },
   reducers:{    
+    ClearTrendingTopic(state,action){
+      state.isfetchingtrendingtopic=true;
+      state.trendingtopics= []      
+    },
     FollowUnfollowTrendingTopic(state,action){
       state.trendingtopics.forEach(function(x){
         if(x._id===action.payload){
@@ -30,7 +34,8 @@ const TrendingTopicSlice = createSlice({
 });
 
 export const {
-  FollowUnfollowTrendingTopic
+  FollowUnfollowTrendingTopic,
+  ClearTrendingTopic
 } = TrendingTopicSlice.actions;
 
 export default TrendingTopicSlice.reducer;

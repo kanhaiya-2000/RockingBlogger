@@ -28,7 +28,7 @@ const NoticeSlice = createSlice({
     [FetchNotice.fulfilled]: (state, action) => {
       state.isFetching = action.payload.notices.length!==0;
       state.currIndex = state.currIndex + action.payload.notices.length;
-      state.notices = [...state.notices,action.payload.notices];
+      state.notices = [...state.notices,...action.payload.notices];
     },
   },
 });

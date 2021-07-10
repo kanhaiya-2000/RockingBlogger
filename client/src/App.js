@@ -12,26 +12,33 @@ import Auth from './components/auth/Auth';
 import Trending from "./pages/Trending";
 import TopicPage from './pages/TopicPage'; 
 
+import { useSelector } from 'react-redux';
+import Reportstory from './pages/Reportstory';
+
 function App() {
-  const isAuthenticated = localStorage.getItem("user");
+  const {data} = useSelector((state)=>state.user);
   return (
     <Router>
       <Navbar />
       <Switch>
         <Route exact path="/" component={Homepage} />
-        <Route path="/signin" render={(props) => <Auth open={true} />} />
-        <Route path="/signup" component={() => <Auth open={true} state={1} />} />
+        <Route path="/signin" render={(props) =>!data?<Auth open={true} />:<Redirect to="/"/>}/>
+        <Route path="/signup" component={() => !data?<Auth open={true} state={1} />:<Redirect to="/"/>} />
         <Route path="/trending" component={Trending}></Route>
 
-        <Route path="/newstory" render={() => isAuthenticated ? <CreateBlog /> :
+        <Route path="/newstory" render={() => data ? <CreateBlog /> :
+          <Auth open={true} />
+        } />
+        <Route path="/report/:sid" render={()=>data?<Reportstory key={window.location.pathname}/>:<Auth open={true}/>}/>
+        <Route path="/editstory/:sid" render={() => data ? <CreateBlog key={window.location.pathname} isEditing={true}/> :
           <Auth open={true} />
         } />
         
-        <Route path="/topic/:topicname" component={() => <TopicPage key={window.location.pathname} />} />
-        <Route path="/search/:term" component={() => <Searchpage key={window.location.pathname} />} />
+        <Route exact path="/topic/:topicname" component={() => <TopicPage key={window.location.pathname} />} />
+        <Route exact path="/search/:term" component={() => <Searchpage key={window.location.pathname} />} />
         <Route path="/follow-tag-or-people" component={FollowPage} />
-        <Route path="/stories/:sid" component={() => <Blog key={window.location.pathname} />} />
-        <Route exact path="/:user" component={Profile}/>
+        <Route exact path="/stories/:sid" component={() => <Blog key={window.location.pathname} />} />
+        <Route exact path="/:user" component={()=><Profile key={window.location.pathname}/>}/>
         {/* <Route path="/users/:uid" component={Profile} /> */}
         <Redirect to="/" />
       </Switch>

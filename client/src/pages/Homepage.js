@@ -9,11 +9,12 @@ import ReadingList from "../components/home/ReadingList";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { useHistory } from "react-router-dom";
 import { NotifyUser } from "../utils/NotifyUser";
-import { FetchExplored } from "../reducers/Explored";
+import { FetchExplored, SaveUnsaveStoryInExplored } from "../reducers/Explored";
 import { FetchTrendingTopic } from "../reducers/TrendingTopic";
 import { FetchreadingList } from "../reducers/ReadingList";
-import { FetchSuggestedUser } from "../reducers/SuggestedUser";
-import { FetchFollowingStory } from "../reducers/Following";
+import { FetchSuggestedUser, FollowUnfollowSuggestedUser } from "../reducers/SuggestedUser";
+import { FetchFollowingStory, SaveUnsaveStory } from "../reducers/Following";
+import { togglefollowPeople, togglesaveUserStory } from "../reducers/user";
 
 
 
@@ -26,33 +27,63 @@ const Homepage = ()=>{
     const {exploredstories,currIndex,isFetching} = useSelector((state)=>state.explore);
     const {data} = useSelector((state)=>state.user);
     const {isFetchingfollowingstories,Followingstories,currindex} = useSelector((state)=>state.followingstory);
-    const {isfetchingtrendingtopic,trendingtopics} = useSelector((state)=>state.trendingtopic);
-    const {isFetchingreadingList,curr5Index,readingList} = useSelector((state)=>state.readingList);
-    const {isFetchingSuggestedUsers,SuggestedUsers} = useSelector((state)=>state.suggesteduser);
+    const {trendingtopics} = useSelector((state)=>state.trendingtopic);
+    const {curr5Index,readingList} = useSelector((state)=>state.readingList);
+    const {SuggestedUsers} = useSelector((state)=>state.suggesteduser);
 
     useEffect(()=>{
-        dispatch(FetchExplored({currIndex}));
+        isFetching&&dispatch(FetchExplored({currIndex}));
         dispatch(FetchTrendingTopic({}));
         data?.username&&dispatch(FetchreadingList({curr5Index,uid:data.username}));
         dispatch(FetchSuggestedUser({limit:5}));
-        //console.log(exploredstories,currIndex,isFetching);
-    },[dispatch,currIndex,curr5Index,data])
+        console.log(exploredstories,currIndex,isFetching);
+    },[])       
     
-    const isAuthenticated = localStorage.getItem("user");
-    const [articleType1,setArticleType1] = React.useState([{author:{avatar:"https://kkleap.github.io/assets/default.jpg",name:"kanhaiya"},header:"Can anyone leave this home?",description:"Hello this story is about something ...",publishDate:"June 14,2000",readingTime:"5 min",isSaved:true,image:"https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png"},{author:{avatar:"https://kkleap.github.io/assets/default.jpg",name:"kanhaiya"},header:"Can anyone leave this home?",description:"Hello this story is about something ...",publishDate:"June 14,2000",readingTime:"5 min",isSaved:false,image:"https://miro.medium.com/fit/c/200/134/1*tHD954Dso7IdwZ1WqdTG7g.png"}]);
-    const [articleType2,setArticleType2] = React.useState([]);
     
     const fetchArticle =({type})=>{
        // NotifyUser({type:"success",content:"Welcome to the rockingblogger",addToast})
+       //console.log(Followingstories);
         switch(type){
-            case 0:
-                setSelected(0);      
-                isFetching&&dispatch(FetchExplored({currIndex}));          
+            case 0:                     
+                isFetching&&dispatch(FetchExplored({currIndex}));   
+                setSelected(0);        
                 return;
-            case 1:
-                setSelected(1);
+            case 1:                
                 isFetchingfollowingstories&&dispatch(FetchFollowingStory({currIndex:currindex}));
+                setSelected(1);
                 return;
+            default:
+                break;
+        }
+    }
+
+    const Useraction = ({type,payload})=>{
+        if(!data){
+            history.push("/signin");
+            return;
+        }
+        switch(type){
+            case "togglefollowpeople":
+                dispatch(togglefollowPeople({payload,callback:function(res,msg){
+                    if(res){
+                        dispatch(FollowUnfollowSuggestedUser(payload.uid));
+                    }
+                    else{
+                        NotifyUser({content:msg,type:"error",addToast});
+                    }
+                }}));
+                break;
+            case "togglesavestory":
+                dispatch(togglesaveUserStory({payload,callback:function(res,msg){
+                    if(res){
+                        dispatch(SaveUnsaveStoryInExplored(payload));
+                        dispatch(SaveUnsaveStory(payload));
+                    }
+                    else{
+                        NotifyUser({content:msg,type:"error",addToast});
+                    }
+                }}))
+                break;
             default:
                 break;
         }
@@ -70,16 +101,16 @@ const Homepage = ()=>{
                 </div>
             </div>
             {
-                selected===0&&articleType1.map(article=><Article article={article} key={article?._id}/>)
+                selected===0&&exploredstories.map(article=><Article article={article} key={article._id} Useraction={Useraction}/>)
             }
             {
-                selected===1&&(isAuthenticated?articleType2.map(article=><Article article={article} key={article?._id}/>):<Redirect to="/signin"/>)
+                selected===1&&(data?Followingstories.map(article=><Article article={article} key={article._id} Useraction={Useraction}/>):<Redirect to="/signin"/>)
             }
         </div>
         <div className="main_right">
-            <Recommendedtopic/>
-            <Suggestedfollowing/>
-            {isAuthenticated&&<ReadingList/>}
+            <Recommendedtopic trendingtopics={trendingtopics}/>
+            <Suggestedfollowing Useraction={Useraction} SuggestedUsers={SuggestedUsers}/>
+            {data&&readingList&&readingList.length>0&&<ReadingList Useraction={Useraction} readingList={readingList}/>}
         </div>
     </div>
 }

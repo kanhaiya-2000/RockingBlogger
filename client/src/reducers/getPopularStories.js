@@ -12,10 +12,13 @@ const popularStorySlice = createSlice({
     isfetchingpopular: true,
     popularStories: [],    
   },
-  reducers:{    
+  reducers:{   
+     
     SaveUnsavePopularStory(state,action){
       state.popularStories.forEach(function(x){
+        console.log(x);
         if(x._id===action.payload){
+          console.log("huhu");
           x.isSaved = !x.isSaved;
         }
       })

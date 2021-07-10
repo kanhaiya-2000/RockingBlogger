@@ -14,6 +14,11 @@ const FollowersSlice = createSlice({
     curr2Index:0,
   },
   reducers:{
+    ClearFollowers(state,action){
+      state.isFetchingfollower=true;
+      state.Followers= [];
+      state.curr2Index=0     
+    },
     FollowUnfollowStatus(state,action){
       state.Followers.forEach(function(x){
         if(x._id===action.payload){
@@ -26,13 +31,14 @@ const FollowersSlice = createSlice({
     [Fetchfollowers.fulfilled]: (state, action) => {
       state.isFetchingfollower = action.payload.users.length!==0;
       state.curr2Index = state.curr2Index + action.payload.users.length;
-      state.Followers = [...state.Followers,action.payload.users];
+      state.Followers = [...state.Followers,...action.payload.users];
     },
   },
 });
 
 export const {
-  FollowUnfollowStatus
+  FollowUnfollowStatus,
+  ClearFollowers
 } = FollowersSlice.actions;
 
 export default FollowersSlice.reducer;

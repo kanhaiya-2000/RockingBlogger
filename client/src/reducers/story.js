@@ -7,24 +7,25 @@ export const getStory = createAsyncThunk(
         const data = await FetchData("/story/"+payload);
 
         if (data.success) {
-            callback({success:true});
-            return data;
+            callback(data.story.html_content);
+            console.log(data);
+            return data.story;
         }
-        callback({error:true});
-        return null;
+        callback(false);
+        return {};
     }
 );
 
 export const editStory = createAsyncThunk(
     "story/editstory",
     async ({ payload, callback }) => {
-        const data = await FetchData("/story/"+payload,{method:"PUT"});
+        const data = await FetchData("/story/"+payload.sid,{body:{payload},method:"PUT"});
 
         if (data.success) {
-            callback({success:true});
+            callback(true);
             return;
         }
-        callback({error:true});
+        callback(false);
         return;
     }
 );
@@ -35,10 +36,10 @@ export const toggleLikeStory = createAsyncThunk(
         const data = await FetchData("/story/togglelike",{body:payload});
 
         if (data.success) {
-            callback({success:true});
+            callback(true);
             return;
         }
-        callback({error:true});
+        callback(false);
         return;
     }
 );
@@ -49,10 +50,10 @@ export const toggleLikeComment = createAsyncThunk(
         const data = await FetchData("/story/togglelikecomment",{body:payload});
 
         if (data.success) {
-            callback({success:true});
+            callback(true);
             return;
         }
-        callback({error:true});
+        callback(false);
         return;
     }
 );
@@ -61,12 +62,13 @@ export const addComment = createAsyncThunk(
     "story/addcomment",
     async ({ payload, callback }) => {
         const data = await FetchData("/story/addcomment",{body:payload});
-
+        
         if (data.success) {
-            callback({success:true});
+            callback(true);
             return;
         }
-        callback({error:true});
+        console.log(data);
+        callback(false);
         return;
     }
 );
@@ -77,10 +79,10 @@ export const deleteComment = createAsyncThunk(
         const data = await FetchData("/story/deletecomment/"+payload,{method:"DELETE"});
 
         if (data.success) {
-            callback({success:true});
+            callback(true);
             return;
         }
-        callback({error:true});
+        callback(false);
         return;
     }
 );
@@ -91,10 +93,10 @@ export const reportStory = createAsyncThunk(
         const data = await FetchData("/story/report/"+payload.sid,{body:payload});
 
         if (data.success) {
-            callback({success:true});
+            callback(true);
             return;
         }
-        callback({error:true});
+        callback(false);
         return;
     }
 );
@@ -105,10 +107,10 @@ export const fetchComments = createAsyncThunk(
         const data = await FetchData("/story/fetchcomments/"+payload+"?currIndex="+currIndex);
 
         if (data.success) {
-            callback({success:true});
+            callback(true);
             return data;
         }
-        callback({error:true});
+        callback(false);
         return null;
     }
 );
@@ -127,16 +129,24 @@ const StorySlice = createSlice({
                 ...action.payload,
             };
         },
-        toggleLikeStory(state,action){
+        togglelikeStory(state,action){
             state.story={
-                ...state.story,
+                ...state.story,                
+                likesCount:state.story.isLiked?state.story.likesCount-1:state.story.likesCount+1,
                 isLiked:!state.story.isLiked
             }
         },
-        toggleLikeComment(state,action){
+        togglesaveStory(state,action){
+            state.story={
+                ...state.story,
+                isSaved:!state.story.isSaved
+            }
+        },
+        togglelikeComment(state,action){
             const comments = state.story.comments;
             comments.forEach(function(x){
-                if(x._id===action.payload){
+                if(x._id===action.payload){                    
+                    x.likesCount=x.isLiked?x.likesCount-1:x.likesCount+1;
                     x.isLiked = !x.isLiked;
                 }
             })
@@ -145,13 +155,20 @@ const StorySlice = createSlice({
                 comments:comments
             }
         },
-        addComment(state,action){
+        addcomment(state,action){
             state.story={
                 ...state.story,
                 comments:[action.payload,...state.story.comments]
             }
         },
-        deleteComment(state,action){
+        toggleFollowAuthor(state,action){
+            state.story = {
+               ...state.story,
+               user:{...state.story.user,isFollowing:!state.story.user.isFollowing}
+            }
+            //console.log(state.story);
+        },
+        deletecomment(state,action){
             state.story={
                 ...state.story,
                 comments:state.story.comments.filter((x)=>x._id!==action.payload)
@@ -160,8 +177,13 @@ const StorySlice = createSlice({
     },
 
     extraReducers: {
-        [getStory.fulfilled]: (state, action) => {
-            state.story = action.payload || {};
+        [getStory.fulfilled]: (state, action) => {            
+
+            state.story = {
+                ...state.story,
+                ...action.payload
+            };
+            
         },  
         [fetchComments.fulfilled]:(state,action) => {
             state.story ={
@@ -176,7 +198,12 @@ const StorySlice = createSlice({
 
 export const {    
     updateStory,
-    logout,
+    togglelikeStory,
+    togglelikeComment,
+    togglesaveStory,
+    addcomment,
+    toggleFollowAuthor,
+    deletecomment
 } = StorySlice.actions;
 
 export default StorySlice.reducer;

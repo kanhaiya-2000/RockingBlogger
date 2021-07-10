@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FetchData } from "../utils/connect";
 
-export const Fetchfollowingpeople = createAsyncThunk("user/followingpeople", async ({curr3Index,user}) => {
-  const data  = await FetchData(`/user/getuserdata/${user}?currIndex=${curr3Index}&data=followers`,{method:"POST"});
+export const Fetchfollowingpeople = createAsyncThunk("user/followingpeople", async ({currIndex,user}) => {
+  const data  = await FetchData(`/user/getuserdata/${user}?currIndex=${currIndex}&data=following`);
   return data;
 });
 
@@ -14,6 +14,11 @@ const FollowingpeopleSlice = createSlice({
     currIndex:0,
   },
   reducers:{
+    ClearFollowingPeople(state,action){
+      state.isFetchingfollowing=true;
+      state.Followingpeople= [];
+      state.currIndex=0     
+    },
     FollowUnfollowStatusInAlreadyFollowing(state,action){
       state.Followingpeople.forEach(function(x){
         if(x._id===action.payload){
@@ -34,8 +39,8 @@ const FollowingpeopleSlice = createSlice({
   extraReducers: {
     [Fetchfollowingpeople.fulfilled]: (state, action) => {
       state.isFetchingfollowing = action.payload.users.length!==0;
-      state.curr3Index = state.curr3Index + action.payload.users.length;
-      state.Followingpeople = [...state.Followingpeople,action.payload.users];
+      state.currIndex = state.currIndex + action.payload.users.length;
+      state.Followingpeople = [...state.Followingpeople,...action.payload.users];
     },
   },
 });
@@ -43,6 +48,7 @@ const FollowingpeopleSlice = createSlice({
 export const {
   FollowUnfollowStatusInAlreadyFollowing,
   addToFollowingList,
+  ClearFollowingPeople,
   removeFromFollowingList
 } = FollowingpeopleSlice.actions;
 

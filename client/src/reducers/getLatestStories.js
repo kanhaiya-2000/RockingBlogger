@@ -14,8 +14,9 @@ const LatestStorySlice = createSlice({
   },
   reducers:{    
     SaveUnsaveLatestStory(state,action){
-      state.lateststories.forEach(function(x){
+      state.latestStories.forEach(function(x){
         if(x._id===action.payload){
+          console.log("huhu");
           x.isSaved = !x.isSaved;
         }
       })

@@ -25,9 +25,9 @@ const ExploredSlice = createSlice({
   extraReducers: {
     [FetchExplored.fulfilled]: (state, action) => {
       console.log(action);
-      state.isFetching = !action.payload.isEnded;
+      state.isFetching = (action.payload.stories.length!==0);
       state.currIndex = state.currIndex + action.payload.stories.length;
-      state.exploredstories = [...state.exploredstories,action.payload.stories];
+      state.exploredstories = state.exploredstories.concat(action.payload.stories);
     },
   },
 });

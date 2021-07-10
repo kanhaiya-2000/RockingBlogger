@@ -2,12 +2,13 @@ const OTPmodel = require("../models/OTPmodel");
 const User = require("../models/User");
 const { generateOTP } = require("../services/generateOTP");
 const { generateTemplate } = require("../services/generateTemplate");
-const { sendMail } = require("../utils/mailer");
+const bcrypt = require("bcryptjs");
+const { sendMail } = require("../services/Mailer");
 
 exports.signup = async (req, res, next) => {
     try {
-        const { fullname, username, email } = req.body;
-        if (!fullname || !username || !email) {
+        let { fullname, username, email,password } = req.body;
+        if (!fullname || !username || !email||!password) {
             return next({
                 message: "Please fill all fields",
                 statusCode: 400
@@ -16,10 +17,21 @@ exports.signup = async (req, res, next) => {
         if ((/^[a-z0-9]+$/i).exec(username) == null) {
             return next({
                 message: "username should only contain letter and digit",
-                statusCode: 404
+                statusCode: 400
             })
         }
-
+        if (username.length<7) {
+            return next({
+                message: "username should contain atleast 7 characters",
+                statusCode: 400
+            })
+        }
+        if(username=="trending"||username=="newstory"||username=="stories"){
+            return next({
+                message:"This username is not available",
+                statusCode:400
+            })
+        }
         //regex for email
 
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -27,7 +39,7 @@ exports.signup = async (req, res, next) => {
         if(!re.test(String(email).toLowerCase())){
             return next({
                 message:"Email is invalid",
-                statusCode:404,
+                statusCode:400,
             })
         }
 
@@ -55,17 +67,19 @@ exports.signup = async (req, res, next) => {
             })
         }
 
-        const tempid = this.generateOTP(16);
+        const tempid = generateOTP(16);
         const salt = await bcrypt.genSalt(10);
         const pass = await bcrypt.hash(password, salt);
         const user = await User.create({ fullname, username,tempid, email, password:pass });
         const token = user.getJwtToken();
 
-        res.status(200).json({ success: true,token: token });
+        res.status(200).json({ success: true,token: token,authdata:{ avatar, username, fullname, email, _id, website, bio, cover } = user});
 
 
     }
     catch (e) {
+        console.log(e);
+        console.log(e);
         return next({
             statusCode: 500,
             message: "Request failed"
@@ -75,7 +89,7 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     try {
-        const { password, email } = req.body;
+        let { password, email } = req.body;
         let user;
         if (!email || !password) {
             return next({
@@ -95,8 +109,8 @@ exports.login = async (req, res, next) => {
                 message: "User not found"
             })
         }
-
-        const correct = user.checkPassword(password);
+        console.log(password);
+        const correct = await user.checkPassword(password);
 
         if (!correct) {
             return next({
@@ -107,9 +121,9 @@ exports.login = async (req, res, next) => {
             if (user.twofactorEnabled) {
                 const OTP = generateOTP(6);
                 const template = generateTemplate({ type: "two-factor-login", data: { user, OTP } });
-                await OTPmodel.deleteMany({ email: email.toLowerCase(), type: "2-factor-login" }, (err, res) => { });
+                await OTPmodel.deleteMany({ email: user.email.toLowerCase(), type: "2-factor-login" }, (err, res) => { });
                 //OTP expires in 5 min
-                await OTPmodel.create({ email:email.toLowerCase(), OTP, type: "2-factor-login" });
+                await OTPmodel.create({ email:user.email.toLowerCase(), OTP, type: "2-factor-login" });
                 sendMail("OTP for login", template.text, template.html, [email.toLowerCase()], (err, res) => {
                     if (err) {
                         return next({
@@ -118,15 +132,19 @@ exports.login = async (req, res, next) => {
                         })
                     }
                 })
-                res.status(200).json({ success: true, verifyotp: true })
+                res.status(200).json({ success: true, verifyotp: true,data:user.email });
+                return;
             }
             else {
                 const token = user.getJwtToken();
-                res.status(200).json({ success: true, token: token });
+                
+                res.status(200).json({ success: true, token: token ,authdata:{ avatar, username, fullname, email, _id, website, bio, cover } = user});
             }
         }
     }
     catch (e) {
+        console.log(e);
+        console.log(e);
         return next({
             statusCode: 500,
             message: "Login failed"
@@ -148,7 +166,7 @@ exports.me = async (req, res, next) => {
 exports.changepassword = async (req, res, next) => {
 
     try {
-        const { email, password, OTP } = req.body;
+        let { email, password, OTP } = req.body;
         if (!email || !password || !OTP) {
             return next({
                 message: "Blank credential not allowed"
@@ -179,9 +197,10 @@ exports.changepassword = async (req, res, next) => {
                 const user = await User.findOne({ email:email.toLowerCase() });
                 const tempid = generateOTP(16);
                 await user.updatePassword(password,tempid);
+                await user.save();                
                 const token = user.getJwtToken();
                 await OTPCheck.remove();
-                res.status(200).json({ success: true,token,user:{ avatar, username, fullname, email, _id, website, bio, cover } = user});
+                res.status(200).json({ success: true,token,authdata:{ avatar, username, fullname, email, _id, website, bio, cover } = user});
                 return;
             }
         }
@@ -193,6 +212,7 @@ exports.changepassword = async (req, res, next) => {
         }
     }
     catch (e) {
+        console.log(e);
         return next({
             statusCode: 500,
             message: "Action failed"
@@ -204,7 +224,9 @@ exports.changepassword = async (req, res, next) => {
 
 exports.requestOTPForPwChange = async (req, res, next) => {
     try {
-        const user = await User.findOne({ email: req.body.email.toLowerCase() });
+        const email = req.body.email.toLowerCase();
+        console.log(email);
+        const user = await User.findOne({ email: email });
         if (!user) {
             return next({
                 message: "No account found with this email",
@@ -212,10 +234,11 @@ exports.requestOTPForPwChange = async (req, res, next) => {
             })
         }
         const OTP = generateOTP(6);
-        await OTPmodel.deleteMany({ email: req.body.email.toLowerCase(), type: "forgot_password" });
-        await OTPmodel.create({ email: req.body.email.toLowerCase(), OTP: OTP, type: "forgot_password" });
-        const templete = generateTemplate({ type: "recover-account", data: { user, OTP } });
-        sendMail("OTP for recovering account", template.text, template.html, [req.body.email.toLowerCase()], (err, res) => {
+        //console.log(OTP);
+        await OTPmodel.deleteMany({ email: email, type: "forgot_password" });
+        await OTPmodel.create({ email: email, OTP: OTP, type: "forgot_password" });
+        const template = generateTemplate({ type: "recover-account", data: { user, OTP } });
+        sendMail("OTP for recovering account", template.text, template.html, [email], (err, re) => {
             if (err) {
                 return next({
                     message: "Email could not be sent",
@@ -229,6 +252,7 @@ exports.requestOTPForPwChange = async (req, res, next) => {
 
     }
     catch (e) {
+        console.log(e);
         return next({
             statusCode: 500,
             message: "Action failed"
@@ -268,11 +292,12 @@ exports.twoFactorOtpVerify = async (req, res, next) => {
             const user = await User.findOne({ email:email.toLowerCase() });
             const token = user.getJwtToken();
             await twofactorOTP.remove();
-            res.status(200).json({ success: true, token });
+            res.status(200).json({ success: true, token,authdata:{ avatar, username, fullname, email, _id, website, bio, cover } = user});
         }
 
     }
     catch (e) {
+        console.log(e);
         return next({
             statusCode: 500,
             message: "Action failed"

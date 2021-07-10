@@ -14,6 +14,7 @@ const FollowingStorySlice = createSlice({
     currindex:0,
   },
   reducers:{    
+    
     SaveUnsaveStory(state,action){
       state.Followingstories.forEach(function(x){
         if(x._id===action.payload){
@@ -26,7 +27,7 @@ const FollowingStorySlice = createSlice({
     [FetchFollowingStory.fulfilled]: (state, action) => {
       state.isFetchingfollowingstories = !action.payload.isEnded;
       state.currindex = state.currindex + action.payload.stories.length;
-      state.Followingstories = [...state.Followingstories,action.payload.stories];
+      state.Followingstories = [...state.Followingstories,...action.payload.stories];
     },
   },
 });

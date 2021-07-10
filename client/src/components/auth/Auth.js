@@ -13,24 +13,183 @@ import Tooltip from '@material-ui/core/Tooltip';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import ActivityIndicator from '@material-ui/core/CircularProgress';
 
 import Button from "@material-ui/core/Button";
+import { login, ReqForgottenPwdOTP, resetPassword, signup, twofactorOTPVerify } from "../../reducers/user";
+import { NotifyUser } from "../../utils/NotifyUser";
+import { useToasts } from "react-toast-notifications";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 
+export const LoadingButton = ()=>{
+    return <ActivityIndicator size={20} color="secondary"/>
+}
 
 const Auth = (props) => {
     const [state, currState] = useState(props.state || 0);
-
-    const [forgetState, setForgetState] = useState(1);
+    const { addToast } = useToasts();
+    const [isloading,setLoading] = useState(false);
+    const history = useHistory();
+    const dispatch = useDispatch();
+    const [forgetState, setForgetState] = useState(0);
+    const [loginstate, setLoginState] = useState(0);
     const [data, setData] = useState({
         login_uname: "",
         login_pwd: "",
+        login_otp: "",
         signup_email: "",
         signup_pwd: "",
+        signup_fullname: "",
         signup_uname: "",
         forget_OTP: "",
         forget_newpwd: "",
-        forget_email: ""
+        forget_email: "",
     });
+
+    const loginFun = () => {
+        const payload = {
+            email: data.login_uname,
+            password: data.login_pwd
+        }
+        if (!payload.email || !payload.password) {
+            NotifyUser({ content: "Please fill all fields", type: "error", addToast })
+            return;
+        }
+        setLoading(true);
+        dispatch(login({
+            payload, callback: function (res, data) {
+                setLoading(false);
+                if (res === "twofactor") {
+                    setLoginState(1);
+                    InputEv({ target: { value: data, name: "login_uname" } });
+                    NotifyUser({ content: "Enter the email sent to your mail", type: "info", addToast });
+                }
+                else if (res === "done") {
+                    history.goBack();
+                }
+                else{
+                    NotifyUser({ content: data, type: "error", addToast });
+                }
+            }
+        }));
+    }
+
+    const signupFun = () => {
+        const payload = {
+            email: data.signup_email,
+            username: data.signup_uname,
+            password: data.signup_pwd,
+            fullname: data.signup_fullname
+        };
+        if (!payload.email || !payload.username || !payload.password || !payload.password) {
+            NotifyUser({ content: "Please fill all fields", type: "error", addToast })
+            return;
+        }
+        if ((/^[a-z0-9]+$/i).exec(payload.username) == null) {
+            NotifyUser({ content: "Username should only contain letter and digit only", type: "error", addToast })
+            return;
+        }
+
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        if (!re.test(String(payload.email).toLowerCase())) {
+            NotifyUser({ content: "Email is invalid", type: "error", addToast })
+            return;
+        }
+
+        if (payload.username.length < 7) {
+            NotifyUser({ content: "Username should have length more than 6", type: "error", addToast })
+            return;
+        }
+        setLoading(true);
+        dispatch(signup({
+            payload, callback: function (res,msg) {
+                setLoading(false);
+                if (res) {
+                    history.goBack();
+                }
+                else{                    
+                    NotifyUser({ content: msg, type: "error", addToast })
+                }
+            }
+        }));
+    }
+
+    const twoFactorOtpVerifyFun = () => {
+        const payload = {
+            email: data.login_uname,
+            OTP: data.login_otp
+        }
+        if (!payload.email || !payload.OTP) {
+            NotifyUser({ content: "Please fill all field", type: "error", addToast });
+            return;
+        }
+        setLoading(true);
+        dispatch(twofactorOTPVerify({
+            payload, callback: function (res,msg) {
+                setLoading(false);
+                if (res) {
+                    history.goBack();
+                }
+                else{                    
+                    NotifyUser({ content: msg, type: "error", addToast })
+                }
+            }
+        }));
+    }
+
+    const requestOTPfun = () => {
+        const payload = {
+            email: data.forget_email
+        }
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!payload.email) {
+            NotifyUser({ content: "Please fill your email", type: "error", addToast })
+            return;
+        }
+        if (!re.test(String(payload.email).toLowerCase())) {
+            NotifyUser({ content: "Email is invalid", type: "error", addToast })
+            return;
+        }
+        setLoading(true);
+        dispatch(ReqForgottenPwdOTP({
+            payload, callback: function (res,msg) {
+                setLoading(false);
+                if (res) {
+                    setForgetState(1);
+                    NotifyUser({ content: "Enter the OTP sent to your email", type: "success", addToast })
+                }
+                else{                    
+                    NotifyUser({ content: msg, type: "error", addToast })
+                }
+            }
+        }))
+    }
+
+    const resetPasswordFun = () => {
+        const payload = {
+            email: data.forget_email,
+            password: data.forget_newpwd,
+            OTP: data.forget_OTP
+        }
+        if (!payload.email || !payload.password || !payload.OTP) {
+            NotifyUser({ content: "Please fill all field", type: "error", addToast });
+            return;
+        }
+        setLoading(true);
+        dispatch(resetPassword({
+            payload, callback: function (res,msg) {
+                setLoading(false);
+                if (res) {
+                    history.goBack();
+                }
+                else{                    
+                    NotifyUser({ content: msg, type: "error", addToast })
+                }
+            }
+        }))
+    }
     const [pwdstate, setPwdState] = useState({
         login_pwd_visibility: false,
         forget_pwd_visibility: false,
@@ -111,7 +270,7 @@ const Auth = (props) => {
                 </Paper>
 
                 {
-                    state === 0 && <div className="account">
+                    state === 0 && (loginstate === 0 ? <div className="account">
                         <div>
                             <AccountCircleIcon className="svgicon" />
                             <TextField label="Username or Email" name="login_uname" value={data.login_uname} onChange={InputEv} />
@@ -128,8 +287,15 @@ const Auth = (props) => {
                                 </Tooltip>}
                         </div>
                         <div className="forget_pwd"><span onClick={() => currState(2)} style={{ margin: "auto" }}>Forgotten password?</span></div>
-                        <Button variant="outlined">Log in</Button>
-                    </div>
+                        {isloading?<Button variant="outlined" style={{background:"white"}}><LoadingButton/></Button>: <Button variant="outlined" onClick={loginFun}>Log in</Button>}
+                    </div> : <div className="account">
+                        <div>
+                            <KeyboardIcon className="svgicon" />
+                            <TextField label="Email OTP" name="login_otp" value={data.login_otp} onChange={InputEv} />
+                        </div>
+                        {isloading?<Button variant="outlined" style={{background:"white"}}><LoadingButton/></Button>:<Button style={{ background: "rgb(217, 57, 88)" }} variant="outlined" onClick={loginFun}>Resend OTP</Button>}
+                        {isloading?<Button variant="outlined" style={{background:"white"}}><LoadingButton/></Button>:<Button variant="outlined" onClick={twoFactorOtpVerifyFun}>Submit</Button>}
+                    </div>)
                 }
                 {
                     state === 1 && <div className="account">
@@ -140,6 +306,10 @@ const Auth = (props) => {
                         <div>
                             <AccountCircleIcon className="svgicon" />
                             <TextField label="Username" name="signup_uname" value={data.signup_uname} onChange={InputEv} />
+                        </div>
+                        <div>
+                            <AccountCircleIcon className="svgicon" />
+                            <TextField label="Fullname" name="signup_fullname" value={data.signup_fullname} onChange={InputEv} />
                         </div>
                         <div>
                             <LockIcon className="svgicon" />
@@ -154,7 +324,7 @@ const Auth = (props) => {
                                 </Tooltip>
                             }
                         </div>
-                        <Button variant="outlined">Sign up</Button>
+                        {isloading?<Button variant="outlined" style={{background:"white"}}><LoadingButton/></Button>:<Button variant="outlined" onClick={signupFun}>Sign up</Button>}
                     </div>
                 }
                 {
@@ -164,7 +334,7 @@ const Auth = (props) => {
                                 <EmailIcon className="svgicon" />
                                 <TextField label="Email" name="forget_email" value={data.forget_email} onChange={InputEv} />
                             </div>
-                            <Button variant="outlined">Recover</Button></>}
+                            {isloading?<Button variant="outlined" style={{background:"white"}}><LoadingButton/></Button>:<Button variant="outlined" onClick={requestOTPfun}>Recover</Button>}</>}
                         {
                             forgetState === 1 && <>
                                 <div>
@@ -183,8 +353,8 @@ const Auth = (props) => {
                                     <KeyboardIcon className="svgicon" />
                                     <TextField label="Email OTP" name="forget_OTP" value={data.forget_OTP} onChange={InputEv} />
                                 </div>
-                                <Button style={{ background: "rgb(217, 57, 88)" }} variant="outlined">Resend OTP</Button>
-                                <Button variant="outlined">Submit</Button>
+                                {isloading?<Button variant="outlined" style={{background:"white"}}><LoadingButton/></Button>:<Button style={{ background: "rgb(217, 57, 88)" }} variant="outlined" onClick={requestOTPfun}>Resend OTP</Button>}
+                                {isloading?<Button variant="outlined" style={{background:"white"}}><LoadingButton/></Button>:<Button variant="outlined" onClick={resetPasswordFun}>Submit</Button>}
                             </>
                         }
                     </div>

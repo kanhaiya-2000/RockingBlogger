@@ -17,6 +17,14 @@ const TopicdetailSlice = createSlice({
     isFetching: true,
     topicDetail: {},    
   },
+  reducers:{
+    togglefollowTopicIn(state,action){
+      state.topicDetail = {
+        ...state.topicDetail,
+        isFollowing:!state.topicDetail.isFollowing
+      }
+    }
+  },
   extraReducers: {
     [FetchTopicdetail.fulfilled]: (state, action) => {
       state.isfetching = false;      
@@ -24,5 +32,9 @@ const TopicdetailSlice = createSlice({
     },
   },
 });
+
+export const {
+  togglefollowTopicIn
+} = TopicdetailSlice.actions;
 
 export default TopicdetailSlice.reducer;

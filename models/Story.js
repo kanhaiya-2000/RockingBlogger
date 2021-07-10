@@ -42,7 +42,7 @@ const StorySchema = new Schema({
           default:0
       },
     readingTime:{
-        type:Number,
+        type:String,
       },
     createdAt:{
         type:Date,

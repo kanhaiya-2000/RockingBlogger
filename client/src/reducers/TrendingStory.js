@@ -13,7 +13,12 @@ const TrendingSlice = createSlice({
     Trendingstories: [],
     currIndex:0,
   },
-  reducers:{    
+  reducers:{  
+    ClearTrendingStory(state,action){
+      state.isFetching=true;
+      state.Trendingstories= [];
+      state.currIndex=0     
+    },
     SaveUnsaveTrendingStory(state,action){
       state.Trendingstories.forEach(function(x){
         if(x._id===action.payload){
@@ -26,13 +31,14 @@ const TrendingSlice = createSlice({
     [FetchTrending.fulfilled]: (state, action) => {
       state.isFetching = (action.payload.stories.length!==0);
       state.currIndex = state.currIndex + action.payload.stories.length;
-      state.Trendingstories = [...state.Trendingstories,action.payload.stories];
+      state.Trendingstories = [...state.Trendingstories,...action.payload.stories];
     },
   },
 });
 
 export const {
-  SaveUnsaveTrendingStory
+  SaveUnsaveTrendingStory,
+  ClearTrendingStory
 } = TrendingSlice.actions;
 
 export default TrendingSlice.reducer;

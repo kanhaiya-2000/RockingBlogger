@@ -13,7 +13,7 @@ router.route("/addcomment").post(Verify,addComment);
 router.route("/togglelikecomment").post(Verify,toggleLikeComment);
 router.route("/search").post(VerifyWithoutThrowingError,searchStory);
 router.route("/deletecomment/:cid").delete(Verify,deleteComment);
-router.route("/report/:sid").post(Verify,reportStory);
+router.route("/report/:sid").post(Verify,reportStory); 
 router.route("/latest/:topic").get(VerifyWithoutThrowingError,getLatestStories);
 router.route("/popular/:topic").get(VerifyWithoutThrowingError,getPopularStories);
 router.route("/gettopicdetail/:topic").get(VerifyWithoutThrowingError,getTopicDetail);

@@ -11,7 +11,7 @@ ReactDOM.render(
   <Provider store={store}>
     <ToastProvider
       autoDismiss={true}
-      autoDismissTimeout={3000}      
+      autoDismissTimeout={4000}      
       placement="top-right"
     >
       <App />

@@ -34,8 +34,8 @@ const LikedstorySlice = createSlice({
   extraReducers: {
     [FetchLikedstory.fulfilled]: (state, action) => {
       state.isFetchingLiked = action.payload.stories.length!==0;
-      state.curr4index = state.currIndex + action.payload.stories.length;
-      state.Likedstories = [...state.Likedstories,action.payload.stories];
+      state.curr4Index = state.curr4Index + action.payload.stories.length;
+      state.Likedstories = [...state.Likedstories,...action.payload.stories];
     },
   },
 });

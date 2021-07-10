@@ -3,30 +3,23 @@ import './Noti.css';
 import React, { useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchNotice } from "../../reducers/getNotice";
+import { FormateDate } from "../../utils/connect";
+import { useHistory } from "react-router-dom";
 
-const Noticomponents = ({ notice }) => {
-    const {isFetching,notices,currIndex} = useSelector((state)=>state.Notice);
-    const dispatch = useDispatch();
-
-    const fetchNotice = ()=>{
-        isFetching&&dispatch(FetchNotice({currIndex}))
-    }
-
-    useEffect(()=>{
-        isFetching&&dispatch(FetchNotice({currIndex}));
-    },[isFetching,dispatch,currIndex])
+const Noticomponents = ({ notice,history }) => {
+    
 
     return (
-        <div className="notice_component">
+        <div className="notice_component" onClick={()=>history.push(`${notice.url}`)}>
             <div className="notice_avatar">
                 <Avatar src={notice.avatar} />
             </div>
             <div className="noti_wrapper">
                 <div className="notice_text">
-                    {notice.text}
+                    {notice.Message}
                 </div>
                 <div className="notice_createdAt">
-                    {notice.createdAt}
+                    {FormateDate(notice.createdAt,false)}
                 </div>
             </div>
 
@@ -37,7 +30,17 @@ const Noticomponents = ({ notice }) => {
 const Noti = () => {
 
     const pointer = React.useRef(null);    
-    
+    const {isFetching,notices,currIndex} = useSelector((state)=>state.Notice);
+    const dispatch = useDispatch();
+    const history = useHistory();
+
+    const fetchNotice = ()=>{
+        isFetching&&dispatch(FetchNotice({currIndex}))
+    }
+
+    useEffect(()=>{
+        fetchNotice();
+    },[])
     useEffect(()=>{
         if(pointer.current){            
             const max = Math.max(document.getElementById("notibell").offsetLeft,document.getElementById("notibell2").offsetLeft);  
@@ -45,12 +48,11 @@ const Noti = () => {
             pointer.current.style.left =  max+"px";
         }
     },[pointer])
-
-    const [notices, setNotices] = React.useState([{ avatar: "", text: "This is a sample notice",createdAt:"4 hours ago" },{ avatar: "", text: "This is a sample notice",createdAt:"4 hours ago" },{ avatar: "", text: "This is a sample notice",createdAt:"4 hours ago" },{ avatar: "", text: "This is a sample notice",createdAt:"4 hours ago" },{ avatar: "", text: "This is a sample notice",createdAt:"4 hours ago" },{ avatar: "", text: "This is a sample notice",createdAt:"4 hours ago" }]);
+    
     return (
         <div className="notice">
             <div className="notice_pointer" ref={pointer}></div>
-            {notices.map(noti => <Noticomponents notice={noti} />)}
+            {notices.map(noti => <Noticomponents notice={noti} key={noti._id} history={history}/>)}
         </div>
     )
 }

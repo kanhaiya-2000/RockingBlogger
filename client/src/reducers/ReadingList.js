@@ -13,7 +13,13 @@ const readingListSlice = createSlice({
     readingList: [],
     curr3Index:0,
   },
-  reducers:{    
+  reducers:{ 
+    
+    clearReadList(state,action){
+      state.isFetchingreadingList=true;
+      state.readingList= [];
+      state.curr3Index=0;     
+    },   
     SaveUnsaveReadStory(state,action){
       state.readingList.forEach(function(x){
         if(x._id===action.payload){
@@ -21,9 +27,9 @@ const readingListSlice = createSlice({
         }
       })
     },
-    addToReadingList(state,action){
+    addToreadingList(state,action){
       state.readingList = [
-        action.payload,
+        ...action.payload,
         ...state.readingList
       ]
     },
@@ -34,15 +40,16 @@ const readingListSlice = createSlice({
   extraReducers: {
     [FetchreadingList.fulfilled]: (state, action) => {
       state.isFetchingreadingList = action.payload.stories.length!==0;
-      state.curr3index = state.curr3Index + action.payload.stories.length;
-      state.readingList = [...state.readingList,action.payload.stories];
+      state.curr3Index = state.curr3Index + action.payload.stories.length;
+      state.readingList = [...state.readingList,...action.payload.stories];
     },
   },
 });
 
 export const {
   SaveUnsaveReadStory,
-  addToReadingList,
+  addToreadingList,
+  clearReadList,
   removeFromReadingList
 } = readingListSlice.actions;
 

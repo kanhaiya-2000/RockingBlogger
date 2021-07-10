@@ -16,7 +16,7 @@ const suggestedTopicSlice = createSlice({
   reducers:{    
     FollowUnfollowSuggestedTopic(state,action){
       state.suggestedtopics.forEach(function(x){
-        if(x._id===action.payload){
+        if(x.name===action.payload){
           x.isFollowing = !x.isFollowing;
         }
       })
@@ -26,7 +26,7 @@ const suggestedTopicSlice = createSlice({
     [FetchsuggestedTopic.fulfilled]: (state, action) => {
       state.isfetchingsuggestedtopic = action.payload.topics.length!==0;     
       state.currIndex2 = state.currIndex2 + action.payload.topics.length; 
-      state.suggestedtopics = [...state.suggestedtopics,action.payload.topics];
+      state.suggestedtopics = [...state.suggestedtopics,...action.payload.topics];
     },
   },
 });

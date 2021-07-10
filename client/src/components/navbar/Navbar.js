@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {useHistory} from "react-router-dom";
 import "./Navbar.css";
 import Input from "@material-ui/core/Input";
@@ -17,6 +17,7 @@ import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import VpnKeyOutlinedIcon from '@material-ui/icons/VpnKeyOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
 import Noti from "../notification/Noti";
+import { useSelector } from "react-redux";
 
 const MobileSearchModal = ({ closeModal,value,setValue,searchResult }) => {
     return (
@@ -40,7 +41,7 @@ const MobileSearchModal = ({ closeModal,value,setValue,searchResult }) => {
     )
 }
 
-const MobileMenu = ({ isAuthenticated,history,closeModal }) => {
+const MobileMenu = ({ data,history,closeModal }) => {
     return (
         <div className="mobilemenu mobile_pf" onClick={closeModal}>
             <div className="menu_item" onClick={()=>history.push("/")}>
@@ -53,11 +54,11 @@ const MobileMenu = ({ isAuthenticated,history,closeModal }) => {
                 <WhatshotOutlinedIcon />&nbsp;&nbsp;Trending
             </div>
            
-            {!isAuthenticated &&
+            {!data &&
                 <div className="menu_item" onClick={()=>history.push("/signin")}>
                     <VpnKeyOutlinedIcon />&nbsp;&nbsp;Log in
                 </div>}
-            {isAuthenticated && 
+            {data && 
                 <div className="menu_item" onClick={()=>history.push("/me")}>
                     <PermIdentityOutlinedIcon />&nbsp;&nbsp;Profile
                 </div>}
@@ -66,16 +67,17 @@ const MobileMenu = ({ isAuthenticated,history,closeModal }) => {
 }
 
 const Navbar = () => {
-    const isAuthenticated = localStorage.getItem("user");
+    const {data} = useSelector((state)=>state.user);
+    
     const history = useHistory();
     const [value,setVal] = React.useState("");    
     const [openMenu, isMenuOpen] = React.useState(false);
     const [search, isSearchOpen] = React.useState(false);
     const [noti,isNoticeOpen] = React.useState(false);
 
-    useEffect(()=>{
-        localStorage.setItem("user",true);
-    },[])
+    // useEffect(()=>{
+    //     localStorage.setItem("user",true);
+    // },[])
 
     const setValue = (value)=>{
         setVal(value);
@@ -89,13 +91,14 @@ const Navbar = () => {
     }
 
     const closeModal = () => {
+        
         isSearchOpen(false);
         isMenuOpen(false);
         isNoticeOpen(false);
     }
     return (
         <div className="header">
-            {openMenu && <MobileMenu isAuthenticated={isAuthenticated} history={history} closeModal={closeModal}/>}
+            {openMenu && <MobileMenu data={data} history={history} closeModal={closeModal}/>}
             {search && <MobileSearchModal closeModal={closeModal} searchResult={searchResult} value={value} setValue={setValue}/>}
             {noti&&<Noti/>}
             <div className="mainheader_wrapper">
@@ -120,9 +123,10 @@ const Navbar = () => {
                     <div className="search_mobile" onClick={() => {closeModal();isSearchOpen(!search)}}>
                         <SearchOutlinedIcon />
                     </div>
-                    <div className="search_mobile" id="notibell" onClick={() => {closeModal();isNoticeOpen(!noti)}}>
+                    {data&&<div className="search_mobile" id="notibell" onClick={() => {closeModal();isNoticeOpen(!noti)}}>
                         <NotificationsActiveOutlinedIcon />
                     </div>
+                    }
                     <div className="create_new" onClick={()=>history.push("/newstory")}>
                         <AddCircleOutlineOutlinedIcon />
                     </div>
@@ -136,11 +140,12 @@ const Navbar = () => {
                             <GroupAddOutlinedIcon />
                         </div>
                     </Tooltip>
-                    <Tooltip title="Notifications 🔔️" TransitionComponent={Zoom} arrow>
+                    {data&&<Tooltip title="Notifications 🔔️" TransitionComponent={Zoom} arrow>
                         <div className="notification_icon icon" id="notibell2" onClick={()=>{closeModal();isNoticeOpen(!noti)}}>
                             <NotificationsActiveOutlinedIcon />
                         </div>
                     </Tooltip>
+                    }
                     <Tooltip title="Trending 🔥️" TransitionComponent={Zoom} arrow>
                         <div className="trending_icon icon" onClick={()=>history.push("/trending")}>
                             <WhatshotOutlinedIcon />
@@ -152,9 +157,9 @@ const Navbar = () => {
                         </div>
                     </Tooltip>                    
 
-                    <div className="profile">{isAuthenticated ?
+                    <div className="profile">{data ?
                         <Tooltip title="Your profile 😃️" TransitionComponent={Zoom} arrow>
-                            <Avatar alt="" onClick={()=>history.push("/me")}/>
+                            <Avatar alt="" onClick={()=>history.push("/"+data.username)}/>
                         </Tooltip>
                         : <span onClick={()=>history.push("/signin")}>Log in</span>}</div>
                 </div>

@@ -14,6 +14,7 @@ exports.VerifyWithoutThrowingError = async(req,res,next)=>{
                 path:"unseennotice",
                 select:"sender"
             });
+            //console.log(decoded.tempid);
             if(user&&user.tempid!=decoded.tempid){//This is the only exception to this method
                 return next({
                     logout:true,

@@ -12,6 +12,19 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+body,html,#root{
+  height:100%;
+}
+.se-container{
+  display:flex !important;
+  flex-direction:column !important;
+}
+.se-wrapper{
+  flex-grow:1;
+}
+.sun-editor{
+  height:100% !important;
+}
 
 .App-header {
   background-color: #282c34;
